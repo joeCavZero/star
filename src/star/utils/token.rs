@@ -1,0 +1,264 @@
+use crate::star::utils::*;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Token {
+    Processor(Processor),
+    Register(Register),
+    Instruction(Instruction),
+    PseudoInstruction(PseudoInstruction),
+    LabelDeclaration(String),
+    Identifier(String),
+    Directive(Directive),
+    Number(String),
+    StringLiteral(String),
+    Comma,
+    LeftSquareBracket,
+    RightSquareBracket,
+
+}
+
+/*
+pub enum PseudoInstruction {
+    // ==== Memory Pseudo Instructions ====
+    La, // load address -- la $rd, address
+    Lxi, // Load extended immediate -- lxi $rd, imm<8>
+
+    Lb, // load byte -- lb $rd, $rs[imm]
+    Lw, // load word -- lw $rd, $rs[imm]
+
+    Lbi, // load byte immediate -- lbi $rd, imm
+    Lwi, // load word immediate -- lwi $rd, imm
+
+    Sb, // store byte -- sb $rs, $rd[imm]
+    Sw, // store word -- sw $rs, $rd[imm]
+
+    Sbi, // store byte immediate -- sbi $rs, imm
+    Swi, // store word immediate -- swi $rs, imm
+
+    // ==== Arithmetic Pseudo Instructions ====
+    Addi, // add immediate
+    Subi, // subtract immediate
+    Andi, // and immediate
+    Ori, // or immediate
+    Xori, // xor immediate
+    Shli, // shift left immediate
+    Shri, // shift right immediate
+
+    Neg, // negate
+
+    Inc, // increment -- inc $r
+    Dec, // decrement -- dec $r
+
+    Mul, // multiply -- mul $rd, $rs, $rt
+    Div, // divide -- div $rd, $rs, $rt
+    Mod, // modulo -- mod $rd, $rs, $rt
+
+    Muli, // multiply immediate -- muli $rd, $rs, imm
+    Divi, // divide immediate -- divi $rd, $rs, imm
+    Modi, // modulo immediate -- modi $rd, $rs, imm
+
+    Mului, // multiply unsigned immediate -- mului $rd, $rs, imm
+    Divui, // divide unsigned immediate -- divui $rd, $rs, imm
+    Modui, // modulo unsigned immediate -- modui $rd, $rs, imm
+
+    // ==== Locality Pseudo Instructions ====
+    Pushb, // push byte into memory -- pushb $r
+    Pushw, // push word into memory -- pushw $r
+
+    Popb, // pop byte from memory -- popb $r
+    Popw, // pop word from memory -- popw $r
+
+    Rpushb, // reverse push byte into memory -- rpushb $r
+    Rpushw, // reverse push word into memory -- rpushw $r
+
+    Rpopb, // reverse pop byte from memory -- rpopb $r
+    Rpopw, // reverse pop word from memory -- rpopw $r
+
+    Insp, // increment stack pointer -- insp
+    Desp, // decrement stack pointer -- dsp
+
+    // ==== Control Flow Pseudo Instructions ====
+    Beqa, // branch equal address -- beqa $rs, $rt, address
+    Bneqa, // branch not equal address -- bneqa $rs, $rt, address
+    Bgta, // branch greater than address -- bgta $rs, $rt, address
+    Blta, // branch less than address -- blta $rs, $rt, address
+
+    Bgtua, // branch greater than unsigned address -- bgtua $rs, $rt, address
+    Bltua, // branch less than unsigned address -- bltua $rs, $rt, address
+}
+*/
+
+impl Token {
+    pub fn from_string(tkn_string: String) -> Result<Self, String> {
+        match tkn_string.as_str() {
+            "lai" => Ok(Token::Instruction(Instruction::Lai)),
+            "lli" => Ok(Token::Instruction(Instruction::Lli)),
+            "add" => Ok(Token::Instruction(Instruction::Add)),
+            "sub" => Ok(Token::Instruction(Instruction::Sub)),
+            "and" => Ok(Token::Instruction(Instruction::And)),
+            "or" => Ok(Token::Instruction(Instruction::Or)),
+            "xor" => Ok(Token::Instruction(Instruction::Xor)),
+            "shl" => Ok(Token::Instruction(Instruction::Shl)),
+            "shr" => Ok(Token::Instruction(Instruction::Shr)),
+            
+            "beqr" => Ok(Token::Instruction(Instruction::Beqr)),
+            "bneqr" => Ok(Token::Instruction(Instruction::Bneqr)),
+            "bgtr" => Ok(Token::Instruction(Instruction::Bgtr)),
+            "bltr" => Ok(Token::Instruction(Instruction::Bltr)),
+            "bgtur" => Ok(Token::Instruction(Instruction::Bgtur)),
+            "bltur" => Ok(Token::Instruction(Instruction::Bltur)),
+            
+            "move" => Ok(Token::Instruction(Instruction::Move)),
+            "swap" => Ok(Token::Instruction(Instruction::Swap)),
+            "xb" => Ok(Token::Instruction(Instruction::Xb)),
+            "lr" => Ok(Token::Instruction(Instruction::Lr)),
+            "lab" => Ok(Token::Instruction(Instruction::Lab)),
+            "llb" => Ok(Token::Instruction(Instruction::Llb)),
+            "sab" => Ok(Token::Instruction(Instruction::Sab)),
+            "slb" => Ok(Token::Instruction(Instruction::Slb)),
+            "mulhl" => Ok(Token::Instruction(Instruction::Mulhl)),
+            "divhl" => Ok(Token::Instruction(Instruction::Divhl)),
+            "muluhl" => Ok(Token::Instruction(Instruction::Muluhl)),
+            "divuhl" => Ok(Token::Instruction(Instruction::Divuhl)),
+            "not" => Ok(Token::Instruction(Instruction::Not)),
+            
+            "br" => Ok(Token::Instruction(Instruction::Br)),
+            
+            "ret" => Ok(Token::Instruction(Instruction::Ret)),
+            "mcall" => Ok(Token::Instruction(Instruction::Mcall)),
+            "nope" => Ok(Token::Instruction(Instruction::Nope)),
+
+            // ==== PSEUDO INSTRUCTIONS ====
+            "la" => Ok(Token::PseudoInstruction(PseudoInstruction::La)),
+            "lxi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lxi)),
+            
+            "lb" => Ok(Token::PseudoInstruction(PseudoInstruction::Lb)),
+            "lw" => Ok(Token::PseudoInstruction(PseudoInstruction::Lw)),
+            
+            "lbi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lbi)),
+            "lwi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lwi)),
+            
+            "sb" => Ok(Token::PseudoInstruction(PseudoInstruction::Sb)),
+            "sw" => Ok(Token::PseudoInstruction(PseudoInstruction::Sw)),
+            
+            "sbi" => Ok(Token::PseudoInstruction(PseudoInstruction::Sbi)),
+            "swi" => Ok(Token::PseudoInstruction(PseudoInstruction::Swi)),
+            
+            "addi" => Ok(Token::PseudoInstruction(PseudoInstruction::Addi)),
+            "subi" => Ok(Token::PseudoInstruction(PseudoInstruction::Subi)),
+            "andi" => Ok(Token::PseudoInstruction(PseudoInstruction::Andi)),
+            "ori" => Ok(Token::PseudoInstruction(PseudoInstruction::Ori)),
+            "xori" => Ok(Token::PseudoInstruction(PseudoInstruction::Xori)),
+            "shli" => Ok(Token::PseudoInstruction(PseudoInstruction::Shli)),
+            "shri" => Ok(Token::PseudoInstruction(PseudoInstruction::Shri)),
+            
+            "neg" => Ok(Token::PseudoInstruction(PseudoInstruction::Neg)),
+            "inc" => Ok(Token::PseudoInstruction(PseudoInstruction::Inc)),
+            "dec" => Ok(Token::PseudoInstruction(PseudoInstruction::Dec)),
+            
+            "mul" => Ok(Token::PseudoInstruction(PseudoInstruction::Mul)),
+            "div" => Ok(Token::PseudoInstruction(PseudoInstruction::Div)),
+            "mod" => Ok(Token::PseudoInstruction(PseudoInstruction::Mod)),
+            "muli" => Ok(Token::PseudoInstruction(PseudoInstruction::Muli)),
+            "divi" => Ok(Token::PseudoInstruction(PseudoInstruction::Divi)),
+            "modi" => Ok(Token::PseudoInstruction(PseudoInstruction::Modi)),
+            
+            "mului" => Ok(Token::PseudoInstruction(PseudoInstruction::Mului)),
+            "divui" => Ok(Token::PseudoInstruction(PseudoInstruction::Divui)),
+            "modui" => Ok(Token::PseudoInstruction(PseudoInstruction::Modui)),
+            
+            "pushb" => Ok(Token::PseudoInstruction(PseudoInstruction::Pushb)),
+            "pushw" => Ok(Token::PseudoInstruction(PseudoInstruction::Pushw)),
+            
+            "popb" => Ok(Token::PseudoInstruction(PseudoInstruction::Popb)),
+            "popw" => Ok(Token::PseudoInstruction(PseudoInstruction::Popw)),
+            
+            "rpushb" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpushb)),
+            "rpushw" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpushw)),
+            
+            "rpopb" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpopb)),
+            "rpopw" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpopw)),
+            
+            "insp" => Ok(Token::PseudoInstruction(PseudoInstruction::Insp)),
+            "dsp" => Ok(Token::PseudoInstruction(PseudoInstruction::Desp)),
+            
+            "beqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Beqa)),
+            "bneqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Bneqa)),
+            "bgta" => Ok(Token::PseudoInstruction(PseudoInstruction::Bgta)),
+            "blta" => Ok(Token::PseudoInstruction(PseudoInstruction::Blta)),
+            "bgtua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bgtua)),
+            "bltua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bltua)),
+            
+            // ==== MISC ====
+            "," => Ok(Token::Comma),
+            "[" => Ok(Token::LeftSquareBracket),
+            "]" => Ok(Token::RightSquareBracket),
+
+            // ==== PROCESSORS ====
+            _ if tkn_string.starts_with("@") => {
+                match tkn_string.as_str() {
+                    "@include" => Ok(Token::Processor(Processor::Include)),
+                    "@define" => Ok(Token::Processor(Processor::Define)),
+                    _ => Err("Invalid processor".to_string()),
+                }
+            }
+
+            // ==== REGISTERS ====
+            _ if tkn_string.starts_with("$") => {
+                match tkn_string.as_str() {
+                    "$zero" | "$0" => Ok(Token::Register(Register::Zero)),
+                    "$a" | "$1" => Ok(Token::Register(Register::A)),
+                    "$b" | "$2" => Ok(Token::Register(Register::B)),
+                    "$c" | "$3" => Ok(Token::Register(Register::C)),
+                    "$d" | "$4" => Ok(Token::Register(Register::D)),
+                    "$e" | "$5" => Ok(Token::Register(Register::E)),
+                    "$f" | "$6" => Ok(Token::Register(Register::F)),
+                    "$g" | "$7" => Ok(Token::Register(Register::G)),
+                    "$h" | "$8" => Ok(Token::Register(Register::H)),
+                    "$aux1" | "$9" => Ok(Token::Register(Register::Aux1)),
+                    "$aux2" | "$10" => Ok(Token::Register(Register::Aux2)),
+                    "$aux3" | "$11" => Ok(Token::Register(Register::Aux3)),
+                    "$carry" | "$12" => Ok(Token::Register(Register::Carry)),
+                    "$high" | "$13" => Ok(Token::Register(Register::High)),
+                    "$low" | "$14" => Ok(Token::Register(Register::Low)),
+                    "$ra" | "$15" => Ok(Token::Register(Register::ReturnAddress)),
+                    _ => Err("Invalid register".to_string()),
+                }
+            }
+
+            // ==== DIRECTIVES ====
+            _ if tkn_string.starts_with(".") => {
+                match tkn_string.as_str() {
+                    ".data" => Ok(Token::Directive(Directive::Data)),
+                    ".instr" => Ok(Token::Directive(Directive::Instr)),
+                    ".byte" => Ok(Token::Directive(Directive::Byte)),
+                    ".word" => Ok(Token::Directive(Directive::Word)),
+                    ".space" => Ok(Token::Directive(Directive::Space)),
+                    ".string" => Ok(Token::Directive(Directive::String)),
+                    ".stringz" => Ok(Token::Directive(Directive::Stringz)),
+                    _ => Err("Invalid directive".to_string()),
+                }
+            }
+
+            // ==== LABEL DECLARATIONS ====
+            _ if tkn_string.ends_with(":") => {
+                let label = tkn_string.trim_end_matches(':').to_string();
+                Ok(Token::LabelDeclaration(label))
+            }
+
+            // ==== STRING LITERALS ====
+            _ if tkn_string.starts_with("\"") && tkn_string.ends_with("\"") => {
+                let string_literal = tkn_string.trim_matches('"').to_string();
+                Ok(Token::StringLiteral(string_literal))
+            }
+
+            // ==== NUMBERS ====
+            _ if tkn_string.to_lowercase().starts_with("0x") || tkn_string.to_lowercase().starts_with("0b") || tkn_string.parse::<i32>().is_ok() => {
+                Ok(Token::Number(tkn_string))
+            }
+
+            // ==== IDENTIFIERS ====
+            _ => Ok(Token::Identifier(tkn_string)),
+        }
+    }
+}

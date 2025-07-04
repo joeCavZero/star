@@ -1,0 +1,20 @@
+#[derive(Debug, Clone, PartialEq)]
+pub enum Register {
+    Zero,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    Aux1,
+    Aux2,
+    Aux3,
+    Carry,
+    High,
+    Low,
+    ReturnAddress,
+    StackPointer,
+}
