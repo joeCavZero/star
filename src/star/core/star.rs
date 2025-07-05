@@ -1,11 +1,14 @@
 use std::collections::HashMap;
+use crate::star::core::*;
 use crate::star::scanneable::*;
+use crate::star::parseable::*;
 
 const DATA_MEMORY_SIZE: usize = 65536;
 
 pub struct Star {
     pub file_table: HashMap<u32, String>,
     pub data_memory: [u8; DATA_MEMORY_SIZE],
+    pub instruction_memory: Vec<PositionedInstruction>,
 }
 
 impl Star {
@@ -13,12 +16,14 @@ impl Star {
         Self {
             file_table: HashMap::new(),
             data_memory: [0; DATA_MEMORY_SIZE],
+            instruction_memory: Vec::new(),
         }
     }
 
-    pub fn load(&mut self, base_file_path: &String) {
+    pub fn load_memory(&mut self, base_file_path: &String) {
         let ptokens = self.scan(base_file_path);
-        println!("{:#?}", ptokens);
+        let ast = self.parse(&ptokens);
+        println!("{:#?}", ast);
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {

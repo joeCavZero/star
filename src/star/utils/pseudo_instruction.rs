@@ -1,7 +1,10 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum PseudoInstruction {
     // ==== Memory Pseudo Instructions ====
+    Move, // move -- move $rd, $rs
+    Swap, // swap -- swap $r1, $r2
     La, // load address -- la $rd, address
+    Lra, // load relative address -- lra $rd, address
     Lxi, // Load extended immediate -- lxi $rd, imm<8>
 
     Lb, // load byte -- lb $rd, $rs[imm]
@@ -17,7 +20,7 @@ pub enum PseudoInstruction {
     Swi, // store word immediate -- swi $rs, imm
 
     // ==== Arithmetic Pseudo Instructions ====
-    Addi, // add immediate
+    Addi, // add immediate -- addi $rd, $rs, imm
     Subi, // subtract immediate
     Andi, // and immediate
     Ori, // or immediate
@@ -25,7 +28,7 @@ pub enum PseudoInstruction {
     Shli, // shift left immediate
     Shri, // shift right immediate
 
-    Neg, // negate
+    Neg, // negate -- neg $rd
 
     Inc, // increment -- inc $r
     Dec, // decrement -- dec $r
@@ -66,6 +69,8 @@ pub enum PseudoInstruction {
 
     Bgtua, // branch greater than unsigned address -- bgtua $rs, $rt, address
     Bltua, // branch less than unsigned address -- bltua $rs, $rt, address
+
+    Ba, // branch address -- ba address
 }
 
 impl PseudoInstruction {

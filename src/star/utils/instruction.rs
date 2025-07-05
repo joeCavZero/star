@@ -1,8 +1,8 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum Instruction {
     // ==== OOOO_XXXX_YYYY_ZZZZ ====
-    Lai, // load alt immediate
-    Lli, // load low immediate
+    Lai, // load alt immediate -- lai $rd, $imm<8>
+    Lli, // load low immediate -- lli $rd, $imm<8>
 
     Add, // addition -- add $rd, $r1, $r2
     Sub, // subtraction -- sub $rd, $r1, $r2
@@ -21,9 +21,6 @@ pub enum Instruction {
     Bltur, // branch less than unsigned relative -- bltur $r1, $r2, $rt
 
     // ==== 1111_OOOO_XXXX_YYYY ====
-    Move, // move -- move $rd, $rs
-    Swap, // swap -- swap $r1, $r2
-
     Xb, // extend byte -- xb $r1, $r2
 
     Lr, // load relative -- lr $rd, $rs 

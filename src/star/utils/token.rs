@@ -108,8 +108,6 @@ impl Token {
             "bgtur" => Ok(Token::Instruction(Instruction::Bgtur)),
             "bltur" => Ok(Token::Instruction(Instruction::Bltur)),
             
-            "move" => Ok(Token::Instruction(Instruction::Move)),
-            "swap" => Ok(Token::Instruction(Instruction::Swap)),
             "xb" => Ok(Token::Instruction(Instruction::Xb)),
             "lr" => Ok(Token::Instruction(Instruction::Lr)),
             "lab" => Ok(Token::Instruction(Instruction::Lab)),
@@ -129,6 +127,8 @@ impl Token {
             "nope" => Ok(Token::Instruction(Instruction::Nope)),
 
             // ==== PSEUDO INSTRUCTIONS ====
+            "move" => Ok(Token::PseudoInstruction(PseudoInstruction::Move)),
+            "swap" => Ok(Token::PseudoInstruction(PseudoInstruction::Swap)),
             "la" => Ok(Token::PseudoInstruction(PseudoInstruction::La)),
             "lxi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lxi)),
             
@@ -188,6 +188,7 @@ impl Token {
             "blta" => Ok(Token::PseudoInstruction(PseudoInstruction::Blta)),
             "bgtua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bgtua)),
             "bltua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bltua)),
+            "ba" => Ok(Token::PseudoInstruction(PseudoInstruction::Ba)),
             
             // ==== MISC ====
             "," => Ok(Token::Comma),
