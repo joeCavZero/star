@@ -20,8 +20,9 @@ impl Star {
         }
     }
 
-    pub fn load_memory(&mut self, base_file_path: &String) {
+    pub fn init(&mut self, base_file_path: &String) {
         let ptokens = self.scan(base_file_path);
+        //println!("{:#?}", ptokens);
         let ast = self.parse(&ptokens);
         println!("{:#?}", ast);
     }

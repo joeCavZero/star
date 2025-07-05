@@ -8,12 +8,13 @@ use crate::star::scanneable::positioned_tokens_vectorable::*;
 pub trait Scanneable {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken>;
 
-    fn scan_and_resolve_includes(
+    fn scan_and_resolve_processors(
         &mut self,
         including_file_path: &String,
         file_path_to_include: &String,
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
+        define_processor_table: &mut HashMap<String, Vec<PositionedToken>>,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken>;
 }
@@ -21,24 +22,30 @@ pub trait Scanneable {
 impl Scanneable for Star {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken> {
         let mut file_dependency_table: HashMap<u32, HashSet<u32>> = HashMap::new();
+        let mut define_processor_table: HashMap<String, Vec<PositionedToken>> = HashMap::new();
         let mut file_counter: u32 = 0;
         let mut processing_stack: HashSet<u32> = HashSet::new();
 
-        self.scan_and_resolve_includes(
+        let ptkns = self.scan_and_resolve_processors(
             &"No one".to_string(),
             base_file_path,
             &mut file_counter,
             &mut file_dependency_table,
+            &mut define_processor_table,
             &mut processing_stack,
-        )
+        );
+
+        //println!("======================\ndefine_processor_table: {:#?}", define_processor_table);
+        ptkns
     }
 
-    fn scan_and_resolve_includes(
+    fn scan_and_resolve_processors(
         &mut self,
         including_file_path: &String,
         file_path_to_include: &String,
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
+        define_processor_table: &mut HashMap<String, Vec<PositionedToken>>,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken> {
         // ==== GETTING THE ABSOLUTE FILE PATH STRING ====
@@ -53,7 +60,7 @@ impl Scanneable for Star {
                 file_path_to_include.clone()
             }
         };
-        println!("Scanning file: {}", absolute_file_path);
+        //println!("Scanning file: {}", absolute_file_path);
 
         // ==== CHECKING IF THE FILE IS ALREADY SCANNED ====
         let file_id = match self.get_file_id_by_path(&absolute_file_path) {
@@ -68,7 +75,7 @@ impl Scanneable for Star {
         if processing_stack.contains(&file_id) {
             self.exit_with_error(
                 &format!(
-                    "Include cycle detected :: [{} -> {}]",
+                    "Include cycle detected: [{} -> {}]",
                     including_file_path.to_beautiful_path(),
                     absolute_file_path.to_beautiful_path(),
                 )
@@ -77,8 +84,8 @@ impl Scanneable for Star {
         processing_stack.insert(file_id);
 
         // ==== SCANNING THE FILE CONTENT ====
-        let mut tokens: Vec<PositionedToken> = match scan_positioned_tokens_from_file(&absolute_file_path, file_id) {
-            Ok(tokens) => tokens,
+        let mut ptokens: Vec<PositionedToken> = match scan_positioned_tokens_from_file(&absolute_file_path, file_id) {
+            Ok(tkns) => tkns,
             Err((err, position_option)) => {
                 match position_option {
                     Some(position) => self.exit_with_positional_error(&err, position),
@@ -95,65 +102,120 @@ impl Scanneable for Star {
 
         // ==== RESOLVING INCLUDES ====
         let mut token_counter: usize = 0;
-        let mut token_quantity: usize = tokens.len();
+        let mut ptokens_len: usize = ptokens.len();
 
-        while token_counter < token_quantity {
-            let tk = match tokens.get(token_counter) {
+        while token_counter < ptokens_len {
+            let tk = match ptokens.get(token_counter) {
                 Some(tk) => tk,
                 None => break,
             };
 
-            if let Token::Processor(Processor::Include) = tk.token {
-                match tokens.get(token_counter + 1).cloned() {
-                    Some(next_p_tkn) => {
-                        if let Token::StringLiteral(include_path_literal_string) = next_p_tkn.token.clone() {
-                            println!("Including file: {}", include_path_literal_string);
-                            let included_tokens = self.scan_and_resolve_includes(
-                                &absolute_file_path,
-                                &include_path_literal_string,
-                                file_counter,
-                                file_dependency_table,
-                                processing_stack,
-                            );
-                            match file_dependency_table.get_mut(&file_id) {
-                                Some(dependencies) => {
-                                    dependencies.insert(*file_counter);
+            match tk.token.clone() {
+                Token::Processor(Processor::Include) => {
+                    match ptokens.get(token_counter + 1).cloned() {
+                        Some(next_p_tkn) => {
+                            if let Token::StringLiteral(include_path_literal_string) = next_p_tkn.token.clone() {
+                                println!("Including file: {}", include_path_literal_string);
+                                let included_ptokens = self.scan_and_resolve_processors(
+                                    &absolute_file_path,
+                                    &include_path_literal_string,
+                                    file_counter,
+                                    file_dependency_table,
+                                    define_processor_table,
+                                    processing_stack,
+                                );
+                                match file_dependency_table.get_mut(&file_id) {
+                                    Some(dependencies) => {
+                                        dependencies.insert(*file_counter);
+                                    }
+                                    None => {
+                                        file_dependency_table.insert(file_id, HashSet::from([*file_counter]));
+                                    }
                                 }
-                                None => {
-                                    file_dependency_table.insert(file_id, HashSet::from([*file_counter]));
+
+                                ptokens.remove(token_counter); // Remove the @include token
+                                ptokens.remove(token_counter); // Remove the file_path token
+
+                                // Insert the included tokens at the current position
+                                for included_ptkn in included_ptokens.into_iter().rev() {
+                                    ptokens.insert(token_counter, included_ptkn);
                                 }
+                                ptokens_len = ptokens.len();
+                            } else {
+                                self.exit_with_positional_error(
+                                    "Include directive must be followed by a file path",
+                                    next_p_tkn.position,
+                                );
                             }
-
-                            tokens.remove(token_counter); // Remove the @include token
-                            tokens.remove(token_counter); // Remove the file_path token
-
-                            // Insert the included tokens at the current position
-                            for included_token in included_tokens.into_iter().rev() {
-                                tokens.insert(token_counter, included_token);
-                                token_quantity += 1;
-                            }
-                        } else {
+                        }
+                        None => {
                             self.exit_with_positional_error(
                                 "Include directive must be followed by a file path",
-                                next_p_tkn.position,
+                                tk.position,
                             );
                         }
                     }
-                    None => {
-                        self.exit_with_positional_error(
-                            "Include directive must be followed by a file path",
-                            tk.position,
-                        );
+                }
+                Token::Processor(Processor::Define) => {
+                    match ptokens.get(token_counter + 1).cloned() {
+                        Some( define_identifier_ptkn ) => {
+                            match define_identifier_ptkn.token {
+                                Token::Identifier(identifier_string) => {
+                                    match read_define_sequence(&ptokens, token_counter + 2, define_identifier_ptkn.position.line) {
+                                        Ok((define_sequence, ptokens_quantity_found)) => {
+                                            //println!("=========\n {:#?} :: {:#?} \n==========", define_identifier_ptkn, define_sequence);
+                                            define_processor_table.insert(
+                                                identifier_string,
+                                                define_sequence.clone(),
+                                            );
+                                            for _ in 0..(ptokens_quantity_found+2) {
+                                                ptokens.remove(token_counter);
+                                            }
+                                            continue;
+                                        }
+                                        Err((err, err_pos)) => {
+                                            self.exit_with_positional_error(&err, err_pos);
+                                        }
+                                    }
+                                }
+                                _ => {
+                                    self.exit_with_positional_error(
+                                        "Define directive must be followed by an identifier",
+                                        define_identifier_ptkn.position,
+                                    );
+                                }
+                            }
+                            
+                        }
+                        None => {
+                            self.exit_with_positional_error(
+                                "Define directive must be followed by an identifier",
+                                tk.position,
+                            );
+                        }
                     }
                 }
-            } else {
-                token_counter += 1;
-                continue;
+                Token::Identifier(identifier_string) => {
+                    // Check if the identifier is a defined processor
+                    if let Some(define_sequence) = define_processor_table.get(&identifier_string) {
+                        ptokens.remove(token_counter);
+
+                        for def_ptk in define_sequence.iter().rev() {
+                            // Insert the defined processor tokens at the current position
+                            ptokens.insert(token_counter, def_ptk.clone());
+                        }
+                        ptokens_len = ptokens.len();
+                    }
+                }
+                _ => {
+                    token_counter += 1;
+                    continue;
+                }
             }
         }
 
         processing_stack.remove(&file_id);
-        return tokens;
+        return ptokens;
     }
 }
 
@@ -314,7 +376,7 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
                         actual_column += 1;
                         continue;
                     }
-                    ',' | '[' | ']' => {
+                    ',' | '[' | ']' | '\\' => {
                         if is_commentary || is_string_literal_mode {
                             if is_string_literal_mode {
                                 token_accumulator.push(ch);
@@ -408,6 +470,48 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
         }
         Err(err) => return Err((err, None)),
     }
+}
+
+fn read_define_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, identifier_line: u32) -> Result<(Vec<PositionedToken>, usize), (String, Position)> {
+    // This function reads a sequence of tokens that defines a define processor
+    // Backslash ables to continue reading the sequence in the next line
+    let mut sequence: Vec<PositionedToken> = Vec::new();
+    let mut ptokens_read: usize = 0;
+    let mut line_to_read: u32 = identifier_line;
+    let mut index = start_index;
+    
+    while index < ptokens.len() {
+        let ptk = match ptokens.get(index) {
+            Some(ptk) => ptk,
+            None => break,
+        };
+
+        if ptk.position.line > line_to_read {
+            break;
+        } else if ptk.position.line < line_to_read {
+            return Err( ("Unexpected line change in define sequence".to_string(), ptk.position) );
+        }
+
+        match ptk.token.clone() {
+            Token::Backslash => {
+                // If the token is a backslash, we continue reading in the next line
+                line_to_read += 1;
+                ptokens_read += 1;
+                index += 1;
+                continue;
+            }
+            _ => {
+                sequence.push(ptk.clone());
+                ptokens_read += 1;
+                index += 1;
+                continue;
+            }
+        }
+    
+    }
+
+    Ok((sequence, ptokens_read))
+
 }
 
 // Trait to convert ugly string path to pretty path

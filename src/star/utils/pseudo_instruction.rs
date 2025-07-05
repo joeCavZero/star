@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PseudoInstruction {
     // ==== Memory Pseudo Instructions ====
     Move, // move -- move $rd, $rs

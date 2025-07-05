@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Instruction {
     // ==== OOOO_XXXX_YYYY_ZZZZ ====
     Lai, // load alt immediate -- lai $rd, $imm<8>
