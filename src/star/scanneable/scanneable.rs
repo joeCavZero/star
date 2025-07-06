@@ -60,8 +60,7 @@ impl Scanneable for Star {
                 file_path_to_include.clone()
             }
         };
-        //println!("Scanning file: {}", absolute_file_path);
-
+        
         // ==== CHECKING IF THE FILE IS ALREADY SCANNED ====
         let file_id = match self.get_file_id_by_path(&absolute_file_path) {
             Some(id) => id,
@@ -109,13 +108,13 @@ impl Scanneable for Star {
                 Some(tk) => tk,
                 None => break,
             };
-
+            
             match tk.token.clone() {
                 Token::Processor(Processor::Include) => {
                     match ptokens.get(token_counter + 1).cloned() {
                         Some(next_p_tkn) => {
                             if let Token::StringLiteral(include_path_literal_string) = next_p_tkn.token.clone() {
-                                println!("Including file: {}", include_path_literal_string);
+                                //println!("Including file: {}", include_path_literal_string);
                                 let included_ptokens = self.scan_and_resolve_processors(
                                     &absolute_file_path,
                                     &include_path_literal_string,
@@ -205,6 +204,9 @@ impl Scanneable for Star {
                             ptokens.insert(token_counter, def_ptk.clone());
                         }
                         ptokens_len = ptokens.len();
+                    } else {
+                        token_counter += 1;
+                        continue;
                     }
                 }
                 _ => {

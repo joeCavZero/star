@@ -3,6 +3,7 @@ use crate::star::utils::*;
 use crate::star::core::*;
 use super::ast::*;
 use super::sequence_reader::*;
+use super::sequence::*;
 
 pub trait Parseable {
     fn parse(&self, ptokens: &Vec<PositionedToken>) -> Ast;
@@ -268,33 +269,10 @@ impl Parseable for Star {
                                 }
                                 Token::PseudoInstruction(pseudo_instr) => {
                                     match pseudo_instr {
-                                        PseudoInstruction::Insp
-                                        | PseudoInstruction::Desp
-                                        => {
-                                            // e.g.: insp
-                                            ast.instr_field.push(
-                                                InstrCamp {
-                                                    label_declarations: label_declaration_accumulator.clone(),
-                                                    instruction: ptk.clone(),
-                                                    sequence: Sequence::Zero,
-                                                }
-                                            );
-                                            ptk_counter += 1;
-                                            label_declaration_accumulator.clear();
-                                            continue;
-                                        }
 
                                         PseudoInstruction::Neg
                                         | PseudoInstruction::Inc
                                         | PseudoInstruction::Dec
-                                        | PseudoInstruction::Pushb
-                                        | PseudoInstruction::Pushw
-                                        | PseudoInstruction::Popb
-                                        | PseudoInstruction::Popw
-                                        | PseudoInstruction::Rpushb
-                                        | PseudoInstruction::Rpushw
-                                        | PseudoInstruction::Rpopb
-                                        | PseudoInstruction::Rpopw
                                         => {
                                             // e.g.: neg $r
                                             match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -352,13 +330,10 @@ impl Parseable for Star {
                                                 Err((err_msg, err_pos)) => self.exit_with_positional_error(&err_msg, err_pos),
                                             }
                                         }
-                                        PseudoInstruction::Lxi
-                                        | PseudoInstruction::Lbi
-                                        | PseudoInstruction::Lwi
-                                        | PseudoInstruction::Sbi
-                                        | PseudoInstruction::Swi
+                                        
+                                        PseudoInstruction::Li
                                         => {
-                                            // e.g.: lxi $r, $imm<8>
+                                            // e.g.: li $r, $imm
                                             match read_r_n_sequence(&ptokens, ptk_counter + 1, ptk.position) {
                                                 Ok(sequence) => {
                                                     ast.instr_field.push(
@@ -378,7 +353,6 @@ impl Parseable for Star {
 
                                         // ==== READ REG IDENTIFIER ====
                                         PseudoInstruction::La
-                                        | PseudoInstruction::Lra
                                         => {
                                             // e.g.: la $r, address
                                             match read_r_id_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -402,6 +376,9 @@ impl Parseable for Star {
                                         PseudoInstruction::Mul
                                         | PseudoInstruction::Div
                                         | PseudoInstruction::Mod
+                                        | PseudoInstruction::Mulu
+                                        | PseudoInstruction::Divu
+                                        | PseudoInstruction::Modu
                                         => {
                                             // e.g.: mul $rd, $rs, $rt
                                             match read_r_r_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {

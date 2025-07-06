@@ -6,6 +6,7 @@ pub mod token;
 pub mod positioned_token;
 pub mod directive;
 pub mod processor;
+pub mod stringable;
 
 pub use position::*;
 pub use instruction::*;
@@ -15,3 +16,4 @@ pub use token::*;
 pub use positioned_token::*;
 pub use directive::*;
 pub use processor::*;
+pub use stringable::*;

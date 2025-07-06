@@ -1,4 +1,5 @@
 use crate::star::utils::*;
+use super::sequence::*;
 
 #[derive(Debug, Clone)]
 pub struct InstrCamp {
@@ -26,10 +27,3 @@ pub struct Ast {
     pub instr_field: Vec<InstrCamp>
 }
 
-#[derive(Debug, Clone)]
-pub enum Sequence {
-    Zero,
-    One(PositionedToken),
-    Two(PositionedToken, PositionedToken),
-    Three(PositionedToken, PositionedToken, PositionedToken),
-}

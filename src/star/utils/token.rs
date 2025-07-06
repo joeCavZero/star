@@ -59,19 +59,15 @@ impl Token {
             "move" => Ok(Token::PseudoInstruction(PseudoInstruction::Move)),
             "swap" => Ok(Token::PseudoInstruction(PseudoInstruction::Swap)),
             "la" => Ok(Token::PseudoInstruction(PseudoInstruction::La)),
-            "lxi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lxi)),
             
             "lb" => Ok(Token::PseudoInstruction(PseudoInstruction::Lb)),
             "lw" => Ok(Token::PseudoInstruction(PseudoInstruction::Lw)),
             
-            "lbi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lbi)),
-            "lwi" => Ok(Token::PseudoInstruction(PseudoInstruction::Lwi)),
+            "li" => Ok(Token::PseudoInstruction(PseudoInstruction::Li)),
             
             "sb" => Ok(Token::PseudoInstruction(PseudoInstruction::Sb)),
             "sw" => Ok(Token::PseudoInstruction(PseudoInstruction::Sw)),
             
-            "sbi" => Ok(Token::PseudoInstruction(PseudoInstruction::Sbi)),
-            "swi" => Ok(Token::PseudoInstruction(PseudoInstruction::Swi)),
             
             "addi" => Ok(Token::PseudoInstruction(PseudoInstruction::Addi)),
             "subi" => Ok(Token::PseudoInstruction(PseudoInstruction::Subi)),
@@ -95,21 +91,6 @@ impl Token {
             "mului" => Ok(Token::PseudoInstruction(PseudoInstruction::Mului)),
             "divui" => Ok(Token::PseudoInstruction(PseudoInstruction::Divui)),
             "modui" => Ok(Token::PseudoInstruction(PseudoInstruction::Modui)),
-            
-            "pushb" => Ok(Token::PseudoInstruction(PseudoInstruction::Pushb)),
-            "pushw" => Ok(Token::PseudoInstruction(PseudoInstruction::Pushw)),
-            
-            "popb" => Ok(Token::PseudoInstruction(PseudoInstruction::Popb)),
-            "popw" => Ok(Token::PseudoInstruction(PseudoInstruction::Popw)),
-            
-            "rpushb" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpushb)),
-            "rpushw" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpushw)),
-            
-            "rpopb" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpopb)),
-            "rpopw" => Ok(Token::PseudoInstruction(PseudoInstruction::Rpopw)),
-            
-            "insp" => Ok(Token::PseudoInstruction(PseudoInstruction::Insp)),
-            "dsp" => Ok(Token::PseudoInstruction(PseudoInstruction::Desp)),
             
             "beqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Beqa)),
             "bneqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Bneqa)),
@@ -180,7 +161,7 @@ impl Token {
             // ==== STRING LITERALS ====
             _ if tkn_string.starts_with("\"") && tkn_string.ends_with("\"") => {
                 let string_literal = tkn_string.trim_matches('"').to_string();
-                Ok(Token::StringLiteral(string_literal))
+                Ok(Token::StringLiteral(string_literal.processed_string()))
             }
 
             // ==== NUMBERS ====

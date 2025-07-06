@@ -12,22 +12,22 @@ pub fn read_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, bas
                                     if let Token::Register(_) = tk2.token {
                                         Ok(Sequence::Two(tk1.clone(), tk2.clone()))
                                     } else {
-                                        Err(("Expected a register after comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected a register after comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected a register after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected a register after comma in this sequence".to_string(), comma.position)),
                             }
                         } else {
-                            Err(("Expected a comma after register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after register in this sequence".to_string(), comma.position))
                         }
                     }
-                    None => Err(("Expected a comma after register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -43,22 +43,22 @@ pub fn read_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, bas
                                     if let Token::Number(_) = tk2.token {
                                         Ok(Sequence::Two(tk1.clone(), tk2.clone()))
                                     } else {
-                                        Err(("Expected a number after comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected a number after comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected a number after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected a number after comma in this sequence".to_string(), comma.position)),
                             }
                         } else {
-                            Err(("Expected a comma after register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after register in this sequence".to_string(), comma.position))
                         }
                     }
-                    None => Err(("Expected a comma after register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -80,34 +80,34 @@ pub fn read_r_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, b
                                                             if let Token::Register(_) = tk3.token {
                                                                 Ok( Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone() ))
                                                             } else {
-                                                                Err(("Expected a register after second comma in this sequence.".to_string(), tk3.position))
+                                                                Err(("Expected a register after second comma in this sequence".to_string(), tk3.position))
                                                             }
                                                         }
-                                                        None => Err(("Expected a register after second comma in this sequence.".to_string(), comma2.position)),
+                                                        None => Err(("Expected a register after second comma in this sequence".to_string(), comma2.position)),
                                                     }
                                                 } else {
-                                                    Err(("Expected a comma after second register in this sequence.".to_string(), comma2.position))
+                                                    Err(("Expected a comma after second register in this sequence".to_string(), comma2.position))
                                                 }
                                             }
-                                            None => Err(("Expected a comma after first register in this sequence.".to_string(), tk2.position)),
+                                            None => Err(("Expected a comma after first register in this sequence".to_string(), tk2.position)),
                                         }
                                     } else {
-                                        Err(("Expected a register after first comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected a register after first comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected a register after first comma in this sequence.".to_string(), comma1.position)),
+                                None => Err(("Expected a register after first comma in this sequence".to_string(), comma1.position)),
                             }
                         } else {
-                            Err(("Expected a comma after first register in this sequence.".to_string(), comma1.position))
+                            Err(("Expected a comma after first register in this sequence".to_string(), comma1.position))
                         }
                     }
-                    None => Err(("Expected a comma after first register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after first register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -123,22 +123,22 @@ pub fn read_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, ba
                                     if let Token::Identifier(_) = tk2.token {
                                         Ok(Sequence::Two(tk1.clone(), tk2.clone()))
                                     } else {
-                                        Err(("Expected an identifier after comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected an identifier after comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected an identifier after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected an identifier after comma in this sequence".to_string(), comma.position)),
                             }
                         } else {
-                            Err(("Expected a comma after register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after register in this sequence".to_string(), comma.position))
                         }
                     }
-                    None => Err(("Expected a comma after register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -165,40 +165,40 @@ pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: us
                                                                         if let Token::LeftSquareBracket = left_square_bracket.token {
                                                                             Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
                                                                         } else {
-                                                                            Err(("Expected a left square bracket after number in this sequence.".to_string(), left_square_bracket.position))
+                                                                            Err(("Expected a left square bracket after number in this sequence".to_string(), left_square_bracket.position))
                                                                         }
                                                                     }
-                                                                    None => Err(("Expected a left square bracket after number in this sequence.".to_string(), tk3.position)),
+                                                                    None => Err(("Expected a left square bracket after number in this sequence".to_string(), tk3.position)),
                                                                 }
                                                             } else {
-                                                                Err(("Expected a number inside brackets in this sequence.".to_string(), tk3.position))
+                                                                Err(("Expected a number inside brackets in this sequence".to_string(), tk3.position))
                                                             }
                                                         }
-                                                        None => Err(("Expected a right square bracket after second register in this sequence.".to_string(), right_square_bracket.position)),
+                                                        None => Err(("Expected a right square bracket after second register in this sequence".to_string(), right_square_bracket.position)),
                                                     }
                                                 } else {
-                                                    Err(("Expected a right square bracket after second register in this sequence.".to_string(), right_square_bracket.position))
+                                                    Err(("Expected a right square bracket after second register in this sequence".to_string(), right_square_bracket.position))
                                                 }
                                             }
-                                            None => Err(("Expected a comma after first register in this sequence.".to_string(), tk2.position)),
+                                            None => Err(("Expected a comma after first register in this sequence".to_string(), tk2.position)),
                                         }
                                     } else {
-                                        Err(("Expected a register after comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected a register after comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected a register after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected a register after comma in this sequence".to_string(), comma.position)),
                             }
                         } else {
-                            Err(("Expected a comma after first register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after first register in this sequence".to_string(), comma.position))
                         }
                     }
-                    None => Err(("Expected a comma after first register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after first register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -208,10 +208,10 @@ pub fn read_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_
             if let Token::Register(_) = tk1.token {
                 Ok(Sequence::One(tk1.clone()))
             } else {
-                Err(("Expected a register in this sequence.".to_string(), base_position))
+                Err(("Expected a register in this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register in this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register in this sequence".to_string(), base_position)),
     }
 }
 
@@ -221,10 +221,10 @@ pub fn read_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base
             if let Token::Identifier(_) = tk1.token {
                 Ok(Sequence::One(tk1.clone()))
             } else {
-                Err(("Expected an identifier in this sequence.".to_string(), base_position))
+                Err(("Expected an identifier in this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected an identifier in this sequence.".to_string(), base_position)),
+        None => Err(("Expected an identifier in this sequence".to_string(), base_position)),
     }
 }
 
@@ -233,29 +233,47 @@ pub fn read_r_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, 
         Some(tk1) => {
             if let Token::Register(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
-                    Some(comma) => {
-                        if let Token::Comma = comma.token {
+                    Some(comma1) => {
+                        if let Token::Comma = comma1.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Identifier(_) = tk2.token {
-                                        Ok(Sequence::Two(tk1.clone(), tk2.clone()))
+                                    if let Token::Register(_) = tk2.token {
+                                        match ptokens.get(start_index + 3) {
+                                            Some(comma2) => {
+                                                if let Token::Comma = comma2.token {
+                                                    match ptokens.get(start_index + 4) {
+                                                        Some(tk3) => {
+                                                            if let Token::Identifier(_) = tk3.token {
+                                                                Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
+                                                            } else {
+                                                                Err(("Expected an identifier after second comma in this sequence".to_string(), tk3.position))
+                                                            }
+                                                        }
+                                                        None => Err(("Expected an identifier after second comma in this sequence".to_string(), comma2.position)),
+                                                    }
+                                                } else {
+                                                    Err(("Expected a comma after second register in this sequence".to_string(), comma2.position))
+                                                }
+                                            }
+                                            None => Err(("Expected a comma after first register in this sequence".to_string(), tk2.position)),
+                                        }
                                     } else {
-                                        Err(("Expected an identifier after comma in this sequence.".to_string(), tk2.position))
+                                        return Err(("Expected a register after comma in this sequence".to_string(), tk2.position));
                                     }
                                 }
-                                None => Err(("Expected an identifier after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected an register after comma in this sequence".to_string(), comma1.position)),
                             }
                         } else {
-                            Err(("Expected a comma after register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after register in this sequence".to_string(), comma1.position))
                         }
                     }
-                    None => Err(("Expected a comma after register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
 
@@ -264,37 +282,46 @@ pub fn read_r_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, b
         Some(tk1) => {
             if let Token::Register(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
-                    Some(comma) => {
-                        if let Token::Comma = comma.token {
+                    Some(comma1) => {
+                        if let Token::Comma = comma1.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
                                     if let Token::Register(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
-                                            Some(tk3) => {
-                                                if let Token::Number(_) = tk3.token {
-                                                    Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
+                                            Some(comma2) => {
+                                                if let Token::Comma = comma2.token {
+                                                    match ptokens.get(start_index + 4) {
+                                                        Some(tk3) => {
+                                                            if let Token::Number(_) = tk3.token {
+                                                                Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
+                                                            } else {
+                                                                Err(("Expected a number after second comma in this sequence".to_string(), tk3.position))
+                                                            }
+                                                        }
+                                                        None => Err(("Expected a number after second comma in this sequence".to_string(), comma2.position)),
+                                                    }
                                                 } else {
-                                                    Err(("Expected a number after second register in this sequence.".to_string(), tk3.position))
+                                                    Err(("Expected a comma after second register in this sequence".to_string(), comma2.position))
                                                 }
                                             }
-                                            None => Err(("Expected a number after second register in this sequence.".to_string(), tk2.position)),
+                                            None => Err(("Expected a comma after second register in this sequence".to_string(), tk2.position)),
                                         }
                                     } else {
-                                        Err(("Expected a register after comma in this sequence.".to_string(), tk2.position))
+                                        Err(("Expected a register after comma in this sequence".to_string(), tk2.position))
                                     }
                                 }
-                                None => Err(("Expected a register after comma in this sequence.".to_string(), comma.position)),
+                                None => Err(("Expected a register after comma in this sequence".to_string(), comma1.position)),
                             }
                         } else {
-                            Err(("Expected a comma after first register in this sequence.".to_string(), comma.position))
+                            Err(("Expected a comma after first register in this sequence".to_string(), comma1.position))
                         }
                     }
-                    None => Err(("Expected a comma after first register in this sequence.".to_string(), tk1.position)),
+                    None => Err(("Expected a comma after first register in this sequence".to_string(), tk1.position)),
                 }
             } else {
-                Err(("Expected a register at the beginning of this sequence.".to_string(), base_position))
+                Err(("Expected a register at the beginning of this sequence".to_string(), base_position))
             }
         }
-        None => Err(("Expected a register at the beginning of this sequence.".to_string(), base_position)),
+        None => Err(("Expected a register at the beginning of this sequence".to_string(), base_position)),
     }
 }
