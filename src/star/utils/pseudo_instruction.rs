@@ -1,6 +1,7 @@
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PseudoInstruction {
     // ==== Memory Pseudo Instructions ====
+    Nope, // --> add $zero, $zero, $zero
     Move, // move -- move $rd, $rs
     Swap, // swap -- swap $r1, $r2
     La, // load address -- la $rd, address
@@ -35,14 +36,6 @@ pub enum PseudoInstruction {
     Divi, // divide immediate -- divi $rd, $rs, imm
     Modi, // modulo immediate -- modi $rd, $rs, imm
 
-    Mulu,
-    Divu,
-    Modu,
-
-    Mului, // multiply unsigned immediate -- mului $rd, $rs, imm
-    Divui, // divide unsigned immediate -- divui $rd, $rs, imm
-    Modui, // modulo unsigned immediate -- modui $rd, $rs, imm
-
     // ==== Control Flow Pseudo Instructions ====
     Beqa, // branch equal address -- beqa $rs, $rt, address
     Bneqa, // branch not equal address -- bneqa $rs, $rt, address
@@ -52,7 +45,10 @@ pub enum PseudoInstruction {
     Bgtua, // branch greater than unsigned address -- bgtua $rs, $rt, address
     Bltua, // branch less than unsigned address -- bltua $rs, $rt, address
 
-    Ba, // branch address -- ba address
+    Ja, // branch address -- ja address
+    Jr, // branch relative -- jr $rs
+
+    Ret, // return -- ret
 }
 
 impl PseudoInstruction {

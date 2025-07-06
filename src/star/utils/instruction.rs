@@ -1,8 +1,6 @@
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Instruction {
     // ==== OOOO_XXXX_YYYY_ZZZZ ====
-    Lai, // load alt immediate -- lai $rd, $imm<8>
-    Lli, // load low immediate -- lli $rd, $imm<8>
 
     Add, // addition -- add $rd, $r1, $r2
     Sub, // subtraction -- sub $rd, $r1, $r2
@@ -11,6 +9,9 @@ pub enum Instruction {
     Xor, // xor -- xor $rd, $r1, $r2
     Shl, // shift left -- shl $rd, $r1, $r2
     Shr, // shift right -- shr $rd, $r1, $r2
+
+    Lai, // load alt immediate -- lai $rd, $imm<8>
+    Lli, // load low immediate -- lli $rd, $imm<8>
 
     Beqr, // branch equal -- beqr $r1, $r2, $rt
     Bneqr, // branch not equal -- bneqr $r1, $r2, $rt
@@ -22,8 +23,6 @@ pub enum Instruction {
 
     // ==== 1111_OOOO_XXXX_YYYY ====
     Xb, // extend byte -- xb $r1, $r2
-
-    Lr, // load relative -- lr $rd, $rs 
 
     Lab, // load alt byte -- lab $r, $raddress
     Llb, // load low byte -- llb $r, $raddress
@@ -39,10 +38,11 @@ pub enum Instruction {
 
     Not, // not -- not $rd, $rs
     
+    Jar, // jump absolute relative -- jar $ra, $a
     // ==== 1111_1111_OOOO_XXXX ====
-    Br, // branch relative -- br $r
+        // DELETED: Br, // branch relative -- br $r
     // ==== 1111_1111_1111_OOOO ====
-    Ret, // return -- ret
+        // DELETED: Ret, // return -- ret
     Mcall, // machine call (syscall) -- mcall
-    Nope, // (1111_1111_1111_1111) -- nope
+        // DELETED: Nope, // (1111_1111_1111_1111) -- nope
 }

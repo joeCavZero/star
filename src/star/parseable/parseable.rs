@@ -55,7 +55,7 @@ impl Parseable for Star {
                                     let data_len = data.len();
                                     if data_len <= 0 {
                                         self.exit_with_positional_error(
-                                            "Directive expects at least one number.",
+                                            "Directive expects at least one number",
                                             ptk.position,
                                         )
                                     }
@@ -73,7 +73,7 @@ impl Parseable for Star {
                                 Token::Directive(Directive::Space) => {
                                     match ptokens.get(ptk_counter + 1) {
                                         Some(next_ptk) => {
-                                            if let Token::Number(_) = next_ptk.token {
+                                            if let Token::NumberLiteral(_) = next_ptk.token {
                                                 ast.data_field.push(
                                                     DataCamp {
                                                         label_declarations: label_declaration_accumulator.clone(),
@@ -86,13 +86,13 @@ impl Parseable for Star {
                                                 continue;
                                             } else {
                                                 self.exit_with_positional_error(
-                                                    "Directive expects a number.",
+                                                    "Directive expects a number",
                                                     ptk.position,
                                                 );
                                             }
                                         }
                                         None => self.exit_with_positional_error(
-                                            "Directive expects a number.",
+                                            "Directive expects a number",
                                             ptk.position,
                                         ),
                                     };
@@ -114,19 +114,19 @@ impl Parseable for Star {
                                                 continue;
                                             } else {
                                                 self.exit_with_positional_error(
-                                                    "Directive expects a literal string.",
+                                                    "Directive expects a literal string",
                                                     ptk.position,
                                                 );
                                             }
                                         }
                                         None => self.exit_with_positional_error(
-                                            "Directive expects a literal string.",
+                                            "Directive expects a literal string",
                                             ptk.position,
                                         ),
                                     };
                                 }
                                 _ => self.exit_with_positional_error(
-                                    "Invalid expression in data field.",
+                                    "Invalid expression in data field",
                                     ptk.position,
                                 ),
                             }
@@ -144,9 +144,7 @@ impl Parseable for Star {
                                 Token::Instruction(instr) => {
                                     // ==== READ NONE ====
                                     match instr {
-                                        | Instruction::Ret
-                                        | Instruction::Mcall
-                                        | Instruction::Nope
+                                        Instruction::Mcall
                                         => {
                                             // e.g.: ret
                                             ast.instr_field.push(
@@ -162,27 +160,29 @@ impl Parseable for Star {
                                         }
 
                                         // ==== READ REG ====
-                                        Instruction::Br => {
-                                            // e.g.: br $r
-                                            match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
-                                                Ok(sequence) => {
-                                                    ast.instr_field.push(
-                                                        InstrCamp {
-                                                            label_declarations: label_declaration_accumulator.clone(),
-                                                            instruction: ptk.clone(),
-                                                            sequence,
-                                                        }
-                                                    );
-                                                    ptk_counter += 2;
-                                                    label_declaration_accumulator.clear();
-                                                    continue;
+                                        /* DELETED:
+                                            Instruction::Br => {
+                                                // e.g.: br $r
+                                                match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
+                                                    Ok(sequence) => {
+                                                        ast.instr_field.push(
+                                                            InstrCamp {
+                                                                label_declarations: label_declaration_accumulator.clone(),
+                                                                instruction: ptk.clone(),
+                                                                sequence,
+                                                            }
+                                                        );
+                                                        ptk_counter += 2;
+                                                        label_declaration_accumulator.clear();
+                                                        continue;
+                                                    }
+                                                    Err((err_msg, err_pos)) => self.exit_with_positional_error(&err_msg, err_pos),
                                                 }
-                                                Err((err_msg, err_pos)) => self.exit_with_positional_error(&err_msg, err_pos),
                                             }
-                                        }
+                                        */
                                         // ==== READ REG REG ====
                                         Instruction::Xb
-                                        | Instruction::Lr
+
                                         | Instruction::Lab
                                         | Instruction::Llb
                                         | Instruction::Sab
@@ -192,6 +192,8 @@ impl Parseable for Star {
                                         | Instruction::Muluhl
                                         | Instruction::Divuhl
                                         | Instruction::Not
+
+                                        | Instruction::Jar
                                         => {
                                             // e.g.: xb $r1, $r2
                                             match read_r_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -269,10 +271,26 @@ impl Parseable for Star {
                                 }
                                 Token::PseudoInstruction(pseudo_instr) => {
                                     match pseudo_instr {
-
+                                        PseudoInstruction::Nope
+                                        | PseudoInstruction::Ret
+                                        => {
+                                            // e.g.: nope
+                                            ast.instr_field.push(
+                                                InstrCamp {
+                                                    label_declarations: label_declaration_accumulator.clone(),
+                                                    instruction: ptk.clone(),
+                                                    sequence: Sequence::Zero,
+                                                }
+                                            );
+                                            ptk_counter += 1;
+                                            label_declaration_accumulator.clear();
+                                            continue;
+                                        }
                                         PseudoInstruction::Neg
                                         | PseudoInstruction::Inc
                                         | PseudoInstruction::Dec
+
+                                        | PseudoInstruction::Jr
                                         => {
                                             // e.g.: neg $r
                                             match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -291,8 +309,8 @@ impl Parseable for Star {
                                                 Err((err_msg, err_pos)) => self.exit_with_positional_error(&err_msg, err_pos),
                                             }
                                         }
-                                        // ==== READ REG IDENTIFIER ====
-                                        PseudoInstruction::Ba => {
+                                        // ==== READ IDENTIFIER ====
+                                        PseudoInstruction::Ja => {
                                             // e.g.: ba address
                                             match read_id_sequence(&ptokens, ptk_counter + 1, ptk.position) {
                                                 Ok(sequence) => {
@@ -376,9 +394,6 @@ impl Parseable for Star {
                                         PseudoInstruction::Mul
                                         | PseudoInstruction::Div
                                         | PseudoInstruction::Mod
-                                        | PseudoInstruction::Mulu
-                                        | PseudoInstruction::Divu
-                                        | PseudoInstruction::Modu
                                         => {
                                             // e.g.: mul $rd, $rs, $rt
                                             match read_r_r_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -409,9 +424,6 @@ impl Parseable for Star {
                                         | PseudoInstruction::Muli
                                         | PseudoInstruction::Divi
                                         | PseudoInstruction::Modi
-                                        | PseudoInstruction::Mului
-                                        | PseudoInstruction::Divui
-                                        | PseudoInstruction::Modui
                                         => {
                                             // e.g.: addi $rd, $rs, imm
                                             match read_r_r_n_sequence(&ptokens, ptk_counter + 1, ptk.position) {
@@ -482,7 +494,10 @@ impl Parseable for Star {
                                         }
                                     }
                                 }
-                                _ => unimplemented!(),
+                                _ => self.exit_with_positional_error(
+                                    "Invalid expression in instruction field",
+                                    ptk.position,
+                                ),
                             }
                         }
                         _ => unreachable!()
@@ -504,7 +519,7 @@ impl Parseable for Star {
                 None => break,
             };
             match ptk.token {
-                Token::Number(_) => {
+                Token::NumberLiteral(_) => {
                     numbers.push(ptk.clone());
                     index += 1;
                 }

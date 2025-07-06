@@ -23,7 +23,6 @@ impl Star {
 
     pub fn init(&mut self, base_file_path: &String) {
         let ptokens = self.scan(base_file_path);
-        println!("{:#?}", ptokens);
         let mut ast = self.parse(&ptokens);
         self.resolve(&mut ast);
         //for i in ast.instr_field {

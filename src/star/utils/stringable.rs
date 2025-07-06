@@ -1,5 +1,6 @@
 pub trait Stringable {
     fn processed_string(&self) -> String;
+    fn beautiful_path(&self) -> String;
 }
 
 impl Stringable for String {
@@ -30,5 +31,15 @@ impl Stringable for String {
         }
         
         result
+    }
+
+    fn beautiful_path(&self) -> String {
+        // e.g.: \\?\D:\codigos\rust\star-vm\test4.asm -> D:/codigos/rust/star-vm/test4.asm
+        self
+            .replace("\\\\?\\", "")
+            .replace("\\", "/")
+            .replace("//", "/")
+            .trim_end_matches('/')
+            .to_string()
     }
 }

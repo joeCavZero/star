@@ -9,7 +9,7 @@ pub enum Token {
     LabelDeclaration(String),
     Identifier(String),
     Directive(Directive),
-    Number(String),
+    NumberLiteral(String),
     StringLiteral(String),
     Comma,
     LeftSquareBracket,
@@ -38,7 +38,6 @@ impl Token {
             "bltur" => Ok(Token::Instruction(Instruction::Bltur)),
             
             "xb" => Ok(Token::Instruction(Instruction::Xb)),
-            "lr" => Ok(Token::Instruction(Instruction::Lr)),
             "lab" => Ok(Token::Instruction(Instruction::Lab)),
             "llb" => Ok(Token::Instruction(Instruction::Llb)),
             "sab" => Ok(Token::Instruction(Instruction::Sab)),
@@ -48,14 +47,14 @@ impl Token {
             "muluhl" => Ok(Token::Instruction(Instruction::Muluhl)),
             "divuhl" => Ok(Token::Instruction(Instruction::Divuhl)),
             "not" => Ok(Token::Instruction(Instruction::Not)),
-            
-            "br" => Ok(Token::Instruction(Instruction::Br)),
-            
-            "ret" => Ok(Token::Instruction(Instruction::Ret)),
+            "jar" => Ok(Token::Instruction(Instruction::Jar)),
+
             "mcall" => Ok(Token::Instruction(Instruction::Mcall)),
-            "nope" => Ok(Token::Instruction(Instruction::Nope)),
+            
 
             // ==== PSEUDO INSTRUCTIONS ====
+            "nope" => Ok(Token::PseudoInstruction(PseudoInstruction::Nope)),
+
             "move" => Ok(Token::PseudoInstruction(PseudoInstruction::Move)),
             "swap" => Ok(Token::PseudoInstruction(PseudoInstruction::Swap)),
             "la" => Ok(Token::PseudoInstruction(PseudoInstruction::La)),
@@ -84,13 +83,10 @@ impl Token {
             "mul" => Ok(Token::PseudoInstruction(PseudoInstruction::Mul)),
             "div" => Ok(Token::PseudoInstruction(PseudoInstruction::Div)),
             "mod" => Ok(Token::PseudoInstruction(PseudoInstruction::Mod)),
+
             "muli" => Ok(Token::PseudoInstruction(PseudoInstruction::Muli)),
             "divi" => Ok(Token::PseudoInstruction(PseudoInstruction::Divi)),
             "modi" => Ok(Token::PseudoInstruction(PseudoInstruction::Modi)),
-            
-            "mului" => Ok(Token::PseudoInstruction(PseudoInstruction::Mului)),
-            "divui" => Ok(Token::PseudoInstruction(PseudoInstruction::Divui)),
-            "modui" => Ok(Token::PseudoInstruction(PseudoInstruction::Modui)),
             
             "beqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Beqa)),
             "bneqa" => Ok(Token::PseudoInstruction(PseudoInstruction::Bneqa)),
@@ -98,8 +94,10 @@ impl Token {
             "blta" => Ok(Token::PseudoInstruction(PseudoInstruction::Blta)),
             "bgtua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bgtua)),
             "bltua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bltua)),
-            "ba" => Ok(Token::PseudoInstruction(PseudoInstruction::Ba)),
+            "Ja" => Ok(Token::PseudoInstruction(PseudoInstruction::Ja)),
+            "jr" => Ok(Token::PseudoInstruction(PseudoInstruction::Jr)),
 
+            "ret" => Ok(Token::PseudoInstruction(PseudoInstruction::Ret)),
             // ==== MISC ====
             "," => Ok(Token::Comma),
             "[" => Ok(Token::LeftSquareBracket),
@@ -166,7 +164,7 @@ impl Token {
 
             // ==== NUMBERS ====
             _ if tkn_string.to_lowercase().starts_with("0x") || tkn_string.to_lowercase().starts_with("0b") || tkn_string.parse::<i32>().is_ok() => {
-                Ok(Token::Number(tkn_string))
+                Ok(Token::NumberLiteral(tkn_string))
             }
 
             // ==== IDENTIFIERS ====

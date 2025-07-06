@@ -75,8 +75,8 @@ impl Scanneable for Star {
             self.exit_with_error(
                 &format!(
                     "Include cycle detected: [{} -> {}]",
-                    including_file_path.to_beautiful_path(),
-                    absolute_file_path.to_beautiful_path(),
+                    including_file_path.beautiful_path(),
+                    absolute_file_path.beautiful_path(),
                 )
             );
         }
@@ -514,21 +514,4 @@ fn read_define_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, iden
 
     Ok((sequence, ptokens_read))
 
-}
-
-// Trait to convert ugly string path to pretty path
-pub trait BeautifulPath {
-    fn to_beautiful_path(&self) -> String;
-}
-
-impl BeautifulPath for String {
-    fn to_beautiful_path(&self) -> String {
-        // e.g.: \\?\D:\codigos\rust\star-vm\test4.asm -> D:/codigos/rust/star-vm/test4.asm
-        self
-            .replace("\\\\?\\", "")
-            .replace("\\", "/")
-            .replace("//", "/")
-            .trim_end_matches('/')
-            .to_string()
-    }
 }

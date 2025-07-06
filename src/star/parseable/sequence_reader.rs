@@ -40,7 +40,7 @@ pub fn read_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, bas
                         if let Token::Comma = comma.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Number(_) = tk2.token {
+                                    if let Token::NumberLiteral(_) = tk2.token {
                                         Ok(Sequence::Two(tk1.clone(), tk2.clone()))
                                     } else {
                                         Err(("Expected a number after comma in this sequence".to_string(), tk2.position))
@@ -159,7 +159,7 @@ pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: us
                                                 if let Token::RightSquareBracket = right_square_bracket.token {
                                                     match ptokens.get(start_index + 4) {
                                                         Some(tk3) => {
-                                                            if let Token::Number(_) = tk3.token {
+                                                            if let Token::NumberLiteral(_) = tk3.token {
                                                                 match ptokens.get(start_index + 5) {
                                                                     Some(left_square_bracket) => {
                                                                         if let Token::LeftSquareBracket = left_square_bracket.token {
@@ -292,7 +292,7 @@ pub fn read_r_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, b
                                                 if let Token::Comma = comma2.token {
                                                     match ptokens.get(start_index + 4) {
                                                         Some(tk3) => {
-                                                            if let Token::Number(_) = tk3.token {
+                                                            if let Token::NumberLiteral(_) = tk3.token {
                                                                 Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
                                                             } else {
                                                                 Err(("Expected a number after second comma in this sequence".to_string(), tk3.position))

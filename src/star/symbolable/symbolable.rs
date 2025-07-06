@@ -106,7 +106,7 @@ impl Symbolable for Star {
                 Token::Directive(Directive::Space) => {
                     if let DataCampArg::Unique(ref ptk_arg) = data_camp.arg {
                         match ptk_arg.token {
-                            Token::Number(ref num_string) => {
+                            Token::NumberLiteral(ref num_string) => {
                                 match u16_from_string(num_string.clone()) {
                                     Ok(num) => {
                                         match data_memory_counter.checked_add(num as usize) {
