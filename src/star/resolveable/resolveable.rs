@@ -611,8 +611,8 @@ impl Resolveable for Star {
                                         },
                                         sequence: Sequence::Three(
                                             arg1.clone(),
-                                            arg1.clone(),
                                             arg2.clone(),
+                                            arg1.clone(),
                                         ),
                                     };
 

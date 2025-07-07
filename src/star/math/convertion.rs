@@ -1,7 +1,15 @@
+use std::mem::transmute;
+
 pub fn u8_from_string(s: String) -> Result<u8, String> {
     match s.parse::<u8>() {
         Ok(value) => Ok(value),
         Err(_) => {
+            match s.parse::<i8>() {
+                Ok(value) => {
+                    unsafe { return Ok(transmute::<i8, u8>(value)) };
+                }
+                Err(_) => {}
+            }
             if s.to_lowercase().starts_with("0x") && s.len() > 2 {
                 let lowercased = s.to_lowercase();
                 let hex_digits = &lowercased[2..];
@@ -70,6 +78,12 @@ pub fn u16_from_string(s: String) -> Result<u16, String> {
     match s.parse::<u16>() {
         Ok(value) => Ok(value),
         Err(_) => {
+            match s.parse::<i16>() {
+                Ok(value) => {
+                    unsafe{ return Ok(transmute::<i16, u16>(value)); }
+                }
+                Err(_) => {}
+            }
             if s.to_lowercase().starts_with("0x") && s.len() > 2 {
                 let lowercased = s.to_lowercase();
                 let hex_digits = &lowercased[2..];
@@ -131,5 +145,23 @@ pub fn u16_from_string(s: String) -> Result<u16, String> {
                 Err(format!("Invalid number format: {}", s))
             }
         }
+    }
+}
+
+pub fn extend_sign_from_u16_to_u32(value: u16) -> u32 {
+    if value & 0b_1000_0000_0000_0000 != 0 {
+        unsafe {
+            transmute::<(u16, u16), u32>((value, 0xFFFF))
+        }
+    } else {
+        unsafe {
+            transmute::<(u16, u16), u32>((value, 0x0000))
+        }
+    }
+}
+
+pub fn extend_zero_from_u16_to_u32(value: u16) -> u32 {
+    unsafe {
+        transmute::<(u16, u16), u32>((value, 0x0000))
     }
 }

@@ -1,7 +1,9 @@
 pub mod generateable;
 pub mod positioned_instruction;
-pub mod folders;
+pub mod folder;
+pub mod defolder;
 
 pub use generateable::*;
 pub use positioned_instruction::*;
-pub use folders::*;
+pub use folder::*;
+pub use defolder::*;

@@ -459,7 +459,7 @@ impl Parseable for Star {
                                                             sequence,
                                                         }
                                                     );
-                                                    ptk_counter += 6;
+                                                    ptk_counter += 7;
                                                     label_declaration_accumulator.clear();
                                                     continue;
                                                 }

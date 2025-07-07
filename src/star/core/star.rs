@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use crate::star::core::*;
+use crate::star::executable::Executable;
 use crate::star::generateable::*;
 use crate::star::resolveable::*;
 use crate::star::scanneable::*;
@@ -10,6 +12,7 @@ pub struct Star {
     pub file_table: HashMap<u32, String>,
     pub data_memory: [u8; DATA_MEMORY_SIZE],
     pub instruction_memory: Vec<PositionedInstruction>,
+    pub registers: Registers,
 }
 
 impl Star {
@@ -18,16 +21,23 @@ impl Star {
             file_table: HashMap::new(),
             data_memory: [0; DATA_MEMORY_SIZE],
             instruction_memory: Vec::new(),
+            registers: Registers::new(),
         }
     }
 
     pub fn init(&mut self, base_file_path: &String) {
         let ptokens = self.scan(base_file_path);
+        println!("Parsed Tokens: {:#?}", ptokens);
         let mut ast = self.parse(&ptokens);
         self.resolve(&mut ast);
         self.generate(&ast);
+        self.execute();
+        println!("{:#?}", self.registers);
         //println!("Data Memory (first 20 bytes): {:?}", &self.data_memory[..20]);
         
+        //for instr in self.instruction_memory.iter() {
+        //    println!("{:?}", Format::from_u16(instr.format));
+        //}
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {
@@ -41,3 +51,4 @@ impl Star {
         }
     }
 }
+

@@ -6,4 +6,5 @@ pub mod parseable;
 pub mod resolveable;
 pub mod symbolable;
 pub mod generateable;
+pub mod executable;
 pub mod math;

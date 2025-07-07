@@ -155,32 +155,32 @@ pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: us
                                 Some(tk2) => {
                                     if let Token::Register(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
-                                            Some(right_square_bracket) => {
-                                                if let Token::RightSquareBracket = right_square_bracket.token {
+                                            Some(left_square_bracket) => {
+                                                if let Token::LeftSquareBracket = left_square_bracket.token {
                                                     match ptokens.get(start_index + 4) {
                                                         Some(tk3) => {
                                                             if let Token::NumberLiteral(_) = tk3.token {
                                                                 match ptokens.get(start_index + 5) {
-                                                                    Some(left_square_bracket) => {
-                                                                        if let Token::LeftSquareBracket = left_square_bracket.token {
+                                                                    Some(right_square_bracket) => {
+                                                                        if let Token::RightSquareBracket = right_square_bracket.token {
                                                                             Ok(Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone()))
                                                                         } else {
-                                                                            Err(("Expected a left square bracket after number in this sequence".to_string(), left_square_bracket.position))
+                                                                            Err(("Expected a right square bracket after number in this sequence".to_string(), right_square_bracket.position))
                                                                         }
                                                                     }
-                                                                    None => Err(("Expected a left square bracket after number in this sequence".to_string(), tk3.position)),
+                                                                    None => Err(("Expected a right square bracket after number in this sequence".to_string(), tk3.position)),
                                                                 }
                                                             } else {
-                                                                Err(("Expected a number inside brackets in this sequence".to_string(), tk3.position))
+                                                                Err(("Expected a right square bracket after number in this sequence".to_string(), tk3.position))
                                                             }
                                                         }
-                                                        None => Err(("Expected a right square bracket after second register in this sequence".to_string(), right_square_bracket.position)),
+                                                        None => Err(("Expected a number inside brackets in this sequence".to_string(), left_square_bracket.position)),
                                                     }
                                                 } else {
-                                                    Err(("Expected a right square bracket after second register in this sequence".to_string(), right_square_bracket.position))
+                                                    Err(("Expected a left square bracket after second register in this sequence".to_string(), left_square_bracket.position))
                                                 }
                                             }
-                                            None => Err(("Expected a comma after first register in this sequence".to_string(), tk2.position)),
+                                            None => Err(("Expected a left square bracket after second register in this sequence".to_string(), tk2.position)),
                                         }
                                     } else {
                                         Err(("Expected a register after comma in this sequence".to_string(), tk2.position))
