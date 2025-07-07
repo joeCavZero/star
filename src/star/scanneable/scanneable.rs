@@ -35,7 +35,6 @@ impl Scanneable for Star {
             &mut processing_stack,
         );
 
-        //println!("======================\ndefine_processor_table: {:#?}", define_processor_table);
         ptkns
     }
 
@@ -114,7 +113,7 @@ impl Scanneable for Star {
                     match ptokens.get(token_counter + 1).cloned() {
                         Some(next_p_tkn) => {
                             if let Token::StringLiteral(include_path_literal_string) = next_p_tkn.token.clone() {
-                                //println!("Including file: {}", include_path_literal_string);
+                                
                                 let included_ptokens = self.scan_and_resolve_processors(
                                     &absolute_file_path,
                                     &include_path_literal_string,
@@ -162,7 +161,7 @@ impl Scanneable for Star {
                                 Token::Identifier(identifier_string) => {
                                     match read_define_sequence(&ptokens, token_counter + 2, define_identifier_ptkn.position.line) {
                                         Ok((define_sequence, ptokens_quantity_found)) => {
-                                            //println!("=========\n {:#?} :: {:#?} \n==========", define_identifier_ptkn, define_sequence);
+                                            
                                             define_processor_table.insert(
                                                 identifier_string,
                                                 define_sequence.clone(),

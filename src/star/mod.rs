@@ -5,4 +5,5 @@ pub mod scanneable;
 pub mod parseable;
 pub mod resolveable;
 pub mod symbolable;
+pub mod generateable;
 pub mod math;

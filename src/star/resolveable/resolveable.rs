@@ -1,50 +1,11 @@
 use std::collections::HashMap;
 
 use crate::star::core::*;
-use crate::star::debuggable::Debugable;
-use crate::star::math::split_u16_to_strings;
-use crate::star::math::u16_from_string;
+use crate::star::debuggable::*;
+use crate::star::math::*;
 use crate::star::parseable::*;
 use crate::star::symbolable::*;
 use crate::star::utils::*;
-
-/*
-    Theres is a difference between resolving non-adressed and
-    addressed instructions. Non-adressed instructions does not
-    require a symbol table to be resolved, while addressed
-    instructions require a symbol table to be resolved.
-    e.g.:
-        - beqa needs the symnol table to use his address
-        numbers
-        - like...
-        ```
-        0 :: beqa $r1, $r2, <LABEL>
-        1 :: nope
-        2 :: nope
-        3 :: nope
-        4 :: nope
-        5 :: LABEL: instr
-        ```
-            |
-            V
-        ```
-        0 :: li $aux1, <LABEL>
-        1 :: lr $aux1, $aux1
-        2 :: li $aux2, 0x0004
-        3 :: sub $aux1, $aux1, $aux2
-        4 :: beqr $r1, $r2, $aux1
-        5 :: LABEL: instr
-        ```
-    - the first layer will add nopes after pseudo instructions to
-    resolve the instruction PC differences.
-
-    - After it, we will resolve the symbol table.
-
-    - After the symbol table is resolved, we will resolve
-    the second layer, which will resolve the addresses of the
-    instructions.
-        
-*/
 pub trait Resolveable {
     fn resolve(&self, ast: &mut Ast);
 
@@ -57,7 +18,6 @@ impl Resolveable for Star {
         self.resolve_space(ast);
         let symbol_table: HashMap<String, u16> = self.get_symbol_table(ast);
         self.resolve_pseudo_instructions(ast, &symbol_table);
-        println!("\n\n\n{:#?}", ast.instr_field);
     }
     fn resolve_space(&self, ast: &mut Ast) {
         let mut instr_field_len = ast.instr_field.len();

@@ -124,14 +124,14 @@ impl Token {
                     "$e" | "$5" => Ok(Token::Register(Register::E)),
                     "$f" | "$6" => Ok(Token::Register(Register::F)),
                     "$g" | "$7" => Ok(Token::Register(Register::G)),
-                    "$h" | "$8" => Ok(Token::Register(Register::H)),
-                    "$aux1" | "$9" => Ok(Token::Register(Register::Aux1)),
-                    "$aux2" | "$10" => Ok(Token::Register(Register::Aux2)),
-                    "$aux3" | "$11" => Ok(Token::Register(Register::Aux3)),
-                    "$carry" | "$12" => Ok(Token::Register(Register::Carry)),
-                    "$high" | "$13" => Ok(Token::Register(Register::High)),
-                    "$low" | "$14" => Ok(Token::Register(Register::Low)),
-                    "$ra" | "$15" => Ok(Token::Register(Register::ReturnAddress)),
+                    "$aux1" | "$8" => Ok(Token::Register(Register::Aux1)),
+                    "$aux2" | "$9" => Ok(Token::Register(Register::Aux2)),
+                    "$aux3" | "$10" => Ok(Token::Register(Register::Aux3)),
+                    "$carry" | "$11" => Ok(Token::Register(Register::Carry)),
+                    "$high" | "$12" => Ok(Token::Register(Register::High)),
+                    "$low" | "$13" => Ok(Token::Register(Register::Low)),
+                    "$ra" | "$14" => Ok(Token::Register(Register::ReturnAddress)),
+                    "$sp" | "$15" => Ok(Token::Register(Register::StackPointer)),
                     _ => Err("Invalid register".to_string()),
                 }
             }
@@ -171,4 +171,5 @@ impl Token {
             _ => Ok(Token::Identifier(tkn_string)),
         }
     }
+
 }

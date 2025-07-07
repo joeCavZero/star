@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::star::core::*;
+use crate::star::generateable::*;
 use crate::star::resolveable::*;
 use crate::star::scanneable::*;
 use crate::star::parseable::*;
@@ -25,9 +25,9 @@ impl Star {
         let ptokens = self.scan(base_file_path);
         let mut ast = self.parse(&ptokens);
         self.resolve(&mut ast);
-        //for i in ast.instr_field {
-        //    println!("{:?}", i.instruction.token);
-        //}
+        self.generate(&ast);
+        //println!("Data Memory (first 20 bytes): {:?}", &self.data_memory[..20]);
+        
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {
