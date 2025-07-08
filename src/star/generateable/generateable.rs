@@ -1,4 +1,6 @@
 
+use std::mem::transmute;
+
 use crate::star::core::*;
 use crate::star::debuggable::Debugable;
 use crate::star::generateable::*;
@@ -174,11 +176,12 @@ impl Generateable for Star {
                                     reg2,
                                     reg3,
                                 );
-                                let positioned_instruction = PositionedInstruction {
-                                    format: format,
-                                    position: instr_camp.instruction.position,
-                                };
-                                self.instruction_memory.push(positioned_instruction);
+
+                                self.position_memory.push(instr_camp.instruction.position);
+
+                                let (instr_low, instr_high) = unsafe { transmute::<u16, (u8, u8)>(format) };
+                                self.instruction_memory.push(instr_high);
+                                self.instruction_memory.push(instr_low);
                             } else {
                                 unreachable!();
                             }
@@ -196,11 +199,12 @@ impl Generateable for Star {
                                             reg,
                                             imm,
                                         );
-                                        let positioned_instruction = PositionedInstruction {
-                                            format: format,
-                                            position: instr_camp.instruction.position,
-                                        };
-                                        self.instruction_memory.push(positioned_instruction);
+                                        
+                                        self.position_memory.push(instr_camp.instruction.position);
+
+                                        let (instr_low, instr_high) = unsafe { transmute::<u16, (u8, u8)>(format) };
+                                        self.instruction_memory.push(instr_high);
+                                        self.instruction_memory.push(instr_low);
                                     }
                                     Err(e) => {
                                         self.exit_with_positional_error(
@@ -224,11 +228,12 @@ impl Generateable for Star {
                                     reg1,
                                     reg2,
                                 );
-                                let positioned_instruction = PositionedInstruction {
-                                    format: format,
-                                    position: instr_camp.instruction.position,
-                                };
-                                self.instruction_memory.push(positioned_instruction);
+                                
+                                self.position_memory.push(instr_camp.instruction.position);
+
+                                let (instr_low, instr_high) = unsafe { transmute::<u16, (u8, u8)>(format) };
+                                self.instruction_memory.push(instr_high);
+                                self.instruction_memory.push(instr_low);
                             } else {
                                 unreachable!();
                             }
@@ -243,11 +248,12 @@ impl Generateable for Star {
                                     instruction,
                                     reg,
                                 );
-                                let positioned_instruction = PositionedInstruction {
-                                    format: format,
-                                    position: instr_camp.instruction.position,
-                                };
-                                self.instruction_memory.push(positioned_instruction);
+                                
+                                self.position_memory.push(instr_camp.instruction.position);
+
+                                let (instr_low, instr_high) = unsafe { transmute::<u16, (u8, u8)>(format) };
+                                self.instruction_memory.push(instr_high);
+                                self.instruction_memory.push(instr_low);
                             } else {
                                 unreachable!();
                             }
@@ -258,11 +264,12 @@ impl Generateable for Star {
                     Format::Ark => {
                         if let Sequence::Zero = instr_camp.sequence.clone() {
                             let format: u16 = fold_ark(instruction);
-                            let positioned_instruction = PositionedInstruction {
-                                format: format,
-                                position: instr_camp.instruction.position,
-                            };
-                            self.instruction_memory.push(positioned_instruction);
+                            
+                            self.position_memory.push(instr_camp.instruction.position);
+
+                            let (instr_low, instr_high) = unsafe { transmute::<u16, (u8, u8)>(format) };
+                            self.instruction_memory.push(instr_high);
+                            self.instruction_memory.push(instr_low);
                         } else {
                             unreachable!();
                         }

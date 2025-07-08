@@ -33,13 +33,28 @@ impl Executable for Star {
             }
         };
         'execution_loop: while self.registers.program_counter < instruction_memory_len {
-            let (instruction_format, instruction_position) = match self.instruction_memory.get(self.registers.program_counter as usize) {
-                Some(instr) => (instr.format, instr.position),
-                None => {
-                    self.exit_with_error("Program counter out of bounds");
-                    break;
-                }
-            };
+            //let (instruction_format, instruction_position) = match self.instruction_memory.get(self.registers.program_counter as usize) {
+            //    Some(instr) => (instr.format, instr.position),
+            //    None => {
+            //        self.exit_with_error("Program counter out of bounds");
+            //        break;
+            //    }
+            //};
+
+            let instr_index: usize = (self.registers.program_counter as usize) * 2 ;
+            let instruction_position_option = self.position_memory.get(self.registers.program_counter as usize).cloned();
+            let (instr_high, instr_low ) = (
+                match self.instruction_memory.get( instr_index ) {
+                    Some(byte) => *byte,
+                    None => break 'execution_loop,
+                },
+                match self.instruction_memory.get( instr_index + 1 ) {
+                    Some(byte) => *byte,
+                    None => break 'execution_loop,
+                },
+            );
+            
+            let instruction_format = unsafe { transmute::<(u8, u8), u16>((instr_low, instr_high)) };
 
             match Format::from_u16(instruction_format) {
                 Format::Trinity => {
@@ -274,7 +289,7 @@ impl Executable for Star {
                                     
                                     self.registers.set(reg1, v);
                                 }
-                                Err(e) => self.exit_with_positional_error(e.as_str(), instruction_position),
+                                Err(e) => self.exit_with_optional_positional_error(e.as_str(), instruction_position_option),
                             }
                             self.increment_program_counter();
                         }
@@ -294,7 +309,7 @@ impl Executable for Star {
 
                             match self.store_on_data_memory(reg2_v, value) {
                                 Ok(_) => {}
-                                Err(e) => self.exit_with_positional_error(e.as_str(), instruction_position),
+                                Err(e) => self.exit_with_optional_positional_error(e.as_str(), instruction_position_option),
                             }
                             
                             self.increment_program_counter();
@@ -340,9 +355,9 @@ impl Executable for Star {
                                             self.registers.aux2 = value;
                                         }
                                         Err(_) => {
-                                            self.exit_with_positional_error(
+                                            self.exit_with_optional_positional_error(
                                                 "Invalid input for 16 bit integer",
-                                                instruction_position,
+                                                instruction_position_option,
                                             );
                                         }
                                     }
@@ -355,9 +370,9 @@ impl Executable for Star {
                                         print!("{}", c);
                                         io::stdout().flush().unwrap();
                                     } else {
-                                        self.exit_with_positional_error(
+                                        self.exit_with_optional_positional_error(
                                             "Invalid character value",
-                                            instruction_position,
+                                            instruction_position_option,
                                         );
                                     }
                                 }
@@ -369,9 +384,9 @@ impl Executable for Star {
                                         let c = trimmed.chars().next().unwrap();
                                         self.registers.aux2 = c as u16;
                                     } else {
-                                        self.exit_with_positional_error(
+                                        self.exit_with_optional_positional_error(
                                             "Invalid input for character",
-                                            instruction_position,
+                                            instruction_position_option,
                                         );
                                     }
 

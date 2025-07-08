@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use crate::star::utils::*;
 use crate::star::core::*;
-use crate::star::executable::Executable;
+use crate::star::executable::*;
 use crate::star::generateable::*;
 use crate::star::resolveable::*;
 use crate::star::scanneable::*;
@@ -11,7 +12,8 @@ pub const DATA_MEMORY_SIZE: usize = 65536;
 pub struct Star {
     pub file_table: HashMap<u32, String>,
     pub data_memory: [u8; DATA_MEMORY_SIZE],
-    pub instruction_memory: Vec<PositionedInstruction>,
+    pub instruction_memory: Vec<u8>,
+    pub position_memory: Vec<Position>,
     pub registers: Registers,
 }
 
@@ -21,6 +23,7 @@ impl Star {
             file_table: HashMap::new(),
             data_memory: [0; DATA_MEMORY_SIZE],
             instruction_memory: Vec::new(),
+            position_memory: Vec::new(),
             registers: Registers::new(),
         }
     }
