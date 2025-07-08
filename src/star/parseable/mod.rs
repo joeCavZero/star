@@ -1,9 +1,9 @@
 pub mod parseable;
 pub mod ast;
-pub mod sequence_reader;
+pub mod reader;
 pub mod sequence;
 
 pub use parseable::*;
 pub use ast::*;
-pub use sequence_reader::*;
+pub use reader::*;
 pub use sequence::*;

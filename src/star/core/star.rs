@@ -26,18 +26,21 @@ impl Star {
     }
 
     pub fn init(&mut self, base_file_path: &String) {
-        let ptokens = self.scan(base_file_path);
-        println!("Parsed Tokens: {:#?}", ptokens);
+        self.process(base_file_path);
+        self.execute();
+        //println!("{:#?}", self.registers);
+        //println!("Data Memory (first 20 bytes): {:?}", &self.data_memory[..20]);
+        //println!("{:#?}", ast);
+        //for instr in self.instruction_memory.iter() {
+        //    println!("{:016b}", instr.format);
+        //}
+    }
+
+    pub fn process(&mut self, file_path: &String) {
+        let ptokens = self.scan(file_path);
         let mut ast = self.parse(&ptokens);
         self.resolve(&mut ast);
         self.generate(&ast);
-        self.execute();
-        println!("{:#?}", self.registers);
-        //println!("Data Memory (first 20 bytes): {:?}", &self.data_memory[..20]);
-        
-        //for instr in self.instruction_memory.iter() {
-        //    println!("{:?}", Format::from_u16(instr.format));
-        //}
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {

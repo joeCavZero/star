@@ -59,7 +59,7 @@ impl Generateable for Star {
                                     Token::Directive(Directive::Word) => {
                                         match u16_from_string((*num_string).to_string()) {
                                             Ok(num) => {
-                                                let (high, low) = split_u16_to_strings(num);
+                                                let (low, high) = split_u16_to_strings(num);
 
                                                 if let Some(byte1) = self.data_memory.get_mut(data_memory_pointer) {
                                                     *byte1 = u8_from_string(high).unwrap_or(0);

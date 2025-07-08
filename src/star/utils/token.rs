@@ -94,7 +94,7 @@ impl Token {
             "blta" => Ok(Token::PseudoInstruction(PseudoInstruction::Blta)),
             "bgtua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bgtua)),
             "bltua" => Ok(Token::PseudoInstruction(PseudoInstruction::Bltua)),
-            "Ja" => Ok(Token::PseudoInstruction(PseudoInstruction::Ja)),
+            "ja" => Ok(Token::PseudoInstruction(PseudoInstruction::Ja)),
             "jr" => Ok(Token::PseudoInstruction(PseudoInstruction::Jr)),
 
             "ret" => Ok(Token::PseudoInstruction(PseudoInstruction::Ret)),

@@ -10,6 +10,7 @@ pub trait Resolveable {
     fn resolve(&self, ast: &mut Ast);
 
     fn resolve_space(&self, ast: &mut Ast);
+    
     fn resolve_pseudo_instructions(&self, ast: &mut Ast, symbol_table: &HashMap<String, u16>);
 }
 
@@ -64,13 +65,8 @@ impl Resolveable for Star {
                         | PseudoInstruction::Mod
                         => {
                             ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
-
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
                         }
 
-                        
                         // ==== +2 ====
                         PseudoInstruction::Swap
 
@@ -88,38 +84,29 @@ impl Resolveable for Star {
                             for _ in 0..2 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
                             }
-
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
                         }
 
                         // ==== +3 ====
                         
-                        | PseudoInstruction::Sb
-                        | PseudoInstruction::Muli
+                        
+                        PseudoInstruction::Muli
                         | PseudoInstruction::Divi
                         | PseudoInstruction::Modi
                         => {
                             for _ in 0..3 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
                             }
-
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
                         }
-                        // ==== +4 ====
-                        PseudoInstruction::Lb
+
+                        // ==== +5 ====
+                        PseudoInstruction::Sb
                         => {
-                            for _ in 0..4 {
+                            for _ in 0..5 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
                             }
-
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
                         }
+                        
+
                         // ==== +6 ====
                         PseudoInstruction::Beqa
                         | PseudoInstruction::Bneqa
@@ -127,35 +114,31 @@ impl Resolveable for Star {
                         | PseudoInstruction::Bgta
                         | PseudoInstruction::Bltua
                         | PseudoInstruction::Bgtua
+
+                        | PseudoInstruction::Lb
+
                         | PseudoInstruction::Ja
                         => {
-                
                             for _ in 0..6 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
                             }
-                            
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
                         }
 
-                        // ==== +7 ====
+                        // ==== +9 ====
                         PseudoInstruction::Lw
                         | PseudoInstruction::Sw
                         => {
-                            for _ in 0..7 {
+                            for _ in 0..9 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
-                            }
-
-                            instr_counter += 1;
-                            instr_field_len = ast.instr_field.len();
-                            continue;
+                            }                            
                         }
+
                     }
                     instr_counter += 1;
                     instr_field_len = ast.instr_field.len();
                     continue;
                 }
+
                 _ => {
                     instr_counter += 1;
                     instr_field_len = ast.instr_field.len();
@@ -282,7 +265,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -293,7 +276,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             reg_ptk.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: imm_ptk.position.clone(),
                                             }
                                         ),
@@ -308,7 +291,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             reg_ptk.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: imm_ptk.position.clone(),
                                             }
                                         ),
@@ -338,7 +321,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -349,7 +332,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             reg_ptk.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: address_ptk.position.clone(),
                                             }
                                         ),
@@ -364,7 +347,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             reg_ptk.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: address_ptk.position.clone(),
                                             }
                                         ),
@@ -560,7 +543,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -569,9 +552,9 @@ impl Resolveable for Star {
                                             position: instr_camp.instruction.position.clone(),
                                         },
                                         sequence: Sequence::Two(
-                                            arg1.clone(),
+                                            aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -584,9 +567,9 @@ impl Resolveable for Star {
                                             position: instr_camp.instruction.position.clone(),
                                         },
                                         sequence: Sequence::Two(
-                                            arg1.clone(),
+                                            aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -612,7 +595,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Three(
                                             arg1.clone(),
                                             arg2.clone(),
-                                            arg1.clone(),
+                                            aux1_reg.clone(),
                                         ),
                                     };
 
@@ -706,7 +689,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(address);
+                                    let (address_low, address_high) = split_u16_to_strings(address);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -717,7 +700,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(address_low),
                                                 position: arg.position.clone(),
                                             }
                                         ),
@@ -732,7 +715,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(address_high),
                                                 position: arg.position.clone(),
                                             }
                                         ),
@@ -761,84 +744,138 @@ impl Resolveable for Star {
                             }
                         }
 
-                        // >>>> 4 <<<<
+                        // >>>> 6 <<<<
 
                         // ====STORE BYTE ====
                        PseudoInstruction::Sb
                         => {
-                            if let Sequence::Two(arg1, arg2) = instr_camp.sequence.clone() {
-                                if let Token::NumberLiteral(offset_str) = arg2.token {
-                                    let offset = match u16_from_string(offset_str) {
-                                        Ok(n) => n,
-                                        Err(e) => {
-                                            self.exit_with_positional_error(
-                                                e.as_str(),
-                                                arg2.position.clone(),
-                                            );
-                                            unreachable!()
-                                        }
-                                    };
-                                    let (high, low) = split_u16_to_strings(offset);
-
-                                    let new_camp_1 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lli),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(low),
-                                                position: arg2.position.clone(),
+                            if let Sequence::Three(arg1, arg2, arg3) = instr_camp.sequence.clone() {
+                                if let Token::Identifier(label) = arg2.token.clone() {
+                                    if let Token::NumberLiteral(offset_str) = arg3.token.clone() {
+                                        let address = match symbol_table.get(&label) {
+                                            Some(addr) => *addr,
+                                            None => {
+                                                self.exit_with_positional_error(
+                                                    "Label not found",
+                                                    arg3.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
-
-                                    let new_camp_2 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lai),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(high),
-                                                position: arg2.position.clone(),
+                                        };
+                                        
+                                        let offset = match u16_from_string(offset_str) {
+                                            Ok(n) => n,
+                                            Err(e) => {
+                                                self.exit_with_positional_error(
+                                                    e.as_str(),
+                                                    arg2.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
+                                        };
 
-                                    let new_camp_3 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Add),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Three(
-                                            aux1_reg.clone(),
-                                            aux1_reg.clone(),
-                                            arg1.clone(),
-                                        ),
-                                    };
+                                        let (address_low, address_high) = split_u16_to_strings(address);
 
-                                    let new_camp_4 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Slb),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            arg1.clone(),
-                                            aux1_reg.clone(),
-                                        ),
-                                    };
+                                        let (offset_low, offset_high) = split_u16_to_strings(offset);
 
-                                    ast.instr_field[instr_counter] = new_camp_1;
-                                    ast.instr_field[instr_counter + 1] = new_camp_2;
-                                    ast.instr_field[instr_counter + 2] = new_camp_3;
-                                    ast.instr_field[instr_counter + 3] = new_camp_4;
+                                        // la label
+
+                                        let new_camp_1 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_low),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_2 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_high),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        // li offset
+
+                                        let new_camp_3 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_low),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_4 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_high),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_5 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Add),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Three(
+                                                aux1_reg.clone(),
+                                                aux1_reg.clone(),
+                                                aux2_reg.clone(),
+                                            ),
+                                        };
+
+                                        let new_camp_6 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Slb),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                arg1.clone(),
+                                                aux1_reg.clone(),
+                                            ),
+                                        };
+
+                                        ast.instr_field[instr_counter] = new_camp_1;
+                                        ast.instr_field[instr_counter + 1] = new_camp_2;
+                                        ast.instr_field[instr_counter + 2] = new_camp_3;
+                                        ast.instr_field[instr_counter + 3] = new_camp_4;
+                                        ast.instr_field[instr_counter + 4] = new_camp_5;
+                                        ast.instr_field[instr_counter + 5] = new_camp_6;
+                                    } else {
+                                        unreachable!()
+                                    }
                                 } else {
                                     unreachable!()
                                 }
@@ -861,7 +898,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -872,7 +909,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -887,7 +924,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -944,7 +981,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -955,7 +992,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -970,7 +1007,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1027,7 +1064,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(num);
+                                    let (num_low, num_high) = split_u16_to_strings(num);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -1038,7 +1075,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(num_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1053,7 +1090,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(num_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1096,95 +1133,149 @@ impl Resolveable for Star {
                             }
                         }
 
-                        // >>>> 5 <<<<
-                        PseudoInstruction::Lb
+                        PseudoInstruction::Lb // -- 7
                         => {
                             if let Sequence::Three(arg1, arg2, arg3) = instr_camp.sequence.clone() {
-                                if let Token::NumberLiteral(offset_str) = arg3.token {
-                                    let offset = match u16_from_string(offset_str) {
-                                        Ok(n) => n,
-                                        Err(e) => {
-                                            self.exit_with_positional_error(
-                                                e.as_str(),
-                                                arg3.position.clone(),
-                                            );
-                                            unreachable!()
-                                        }
-                                    };
-                                    let (high, low) = split_u16_to_strings(offset);
-
-                                    let new_camp_1 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lli),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(low),
-                                                position: arg3.position.clone(),
+                                if let Token::Identifier(label) = arg2.token.clone() {
+                                    if let Token::NumberLiteral(offset_str) = arg3.token {
+                                        let address = match symbol_table.get(&label) {
+                                            Some(addr) => *addr,
+                                            None => {
+                                                self.exit_with_positional_error(
+                                                    "Label not found",
+                                                    arg2.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
+                                        };
 
-                                    let new_camp_2 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lai),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(high),
-                                                position: arg3.position.clone(),
+                                        let offset = match u16_from_string(offset_str) {
+                                            Ok(n) => n,
+                                            Err(e) => {
+                                                self.exit_with_positional_error(
+                                                    e.as_str(),
+                                                    arg3.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
+                                        };
+                                        let (address_low, address_high) = split_u16_to_strings(address);
 
-                                    let new_camp_3 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Add),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Three(
-                                            aux1_reg.clone(),
-                                            aux1_reg.clone(),
-                                            arg2.clone(),
-                                        ),
-                                    };
+                                        let (offset_low, offset_high) = split_u16_to_strings(offset);
 
-                                    let new_camp_4 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Llb),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            arg1.clone(),
-                                            aux1_reg.clone(),
-                                        ),
-                                    };
 
-                                    let new_camp_5 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Xb),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            arg1.clone(),
-                                            arg1.clone(),
-                                        ),
-                                    };
+                                        // la label
+                                        let new_camp_1 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_low),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
 
-                                    ast.instr_field[instr_counter] = new_camp_1;
-                                    ast.instr_field[instr_counter + 1] = new_camp_2;
-                                    ast.instr_field[instr_counter + 2] = new_camp_3;
-                                    ast.instr_field[instr_counter + 3] = new_camp_4;
-                                    ast.instr_field[instr_counter + 4] = new_camp_5;
+                                        let new_camp_2 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_high),
+                                                    position: arg2.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        // li offset
+
+                                        let new_camp_3 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_low),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_4 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_high),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        // add $aux1, $aux1, $aux2
+
+                                        let new_camp_5 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Add),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Three(
+                                                aux1_reg.clone(),
+                                                aux1_reg.clone(),
+                                                aux2_reg.clone(),
+                                            ),
+                                        };
+
+                                        let new_camp_6 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Llb),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                arg1.clone(),
+                                                aux1_reg.clone(),
+                                            ),
+                                        };
+
+                                        let new_camp_7 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Xb),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                arg1.clone(),
+                                                arg1.clone(),
+                                            ),
+                                        };
+
+                                        ast.instr_field[instr_counter] = new_camp_1;
+                                        ast.instr_field[instr_counter + 1] = new_camp_2;
+                                        ast.instr_field[instr_counter + 2] = new_camp_3;
+                                        ast.instr_field[instr_counter + 3] = new_camp_4;
+                                        ast.instr_field[instr_counter + 4] = new_camp_5;
+                                        ast.instr_field[instr_counter + 5] = new_camp_6;
+                                        ast.instr_field[instr_counter + 6] = new_camp_7;
+                                    } else {
+                                        unreachable!()
+                                    }
                                 } else {
                                     unreachable!()
                                 }
@@ -1213,7 +1304,7 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (high, low) = split_u16_to_strings(address);
+                                    let (address_low, address_high) = split_u16_to_strings(address);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -1224,7 +1315,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(low),
+                                                token: Token::NumberLiteral(address_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1239,7 +1330,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(high),
+                                                token: Token::NumberLiteral(address_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1338,155 +1429,213 @@ impl Resolveable for Star {
                             }
                         }
 
-                       // >>>> 8 <<<<
+                       // >>>> 10 <<<<
                        // ==== LOAD WORD and STORE WORD ====
                         PseudoInstruction::Lw
                         | PseudoInstruction::Sw
                         => {
                             if let Sequence::Three(arg1, arg2, arg3) = instr_camp.sequence.clone() {
-                                if let Token::NumberLiteral(offset_str) = arg3.token {
-                                    let offset = match u16_from_string(offset_str) {
-                                        Ok(n) => n,
-                                        Err(e) => {
-                                            self.exit_with_positional_error(
-                                                e.as_str(),
-                                                arg3.position.clone(),
-                                            );
-                                            unreachable!()
-                                        }
-                                    };
-                                    let (high, low) = split_u16_to_strings(offset);
-
-                                    let new_camp_1 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lli),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(low),
-                                                position: arg3.position.clone(),
+                                if let Token::Identifier(label) = arg2.token.clone() {
+                                    if let Token::NumberLiteral(offset_str) = arg3.token {
+                                        let address = match symbol_table.get(&label) {
+                                            Some(addr) => *addr,
+                                            None => {
+                                                self.exit_with_positional_error(
+                                                    "Label not found",
+                                                    arg2.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
-
-                                    let new_camp_2 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lai),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux1_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral(high),
-                                                position: arg3.position.clone(),
+                                        };
+                                        
+                                        let offset = match u16_from_string(offset_str) {
+                                            Ok(n) => n,
+                                            Err(e) => {
+                                                self.exit_with_positional_error(
+                                                    e.as_str(),
+                                                    arg3.position.clone(),
+                                                );
+                                                unreachable!()
                                             }
-                                        ),
-                                    };
+                                        };
 
-                                    let new_camp_3 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Add),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Three(
-                                            aux1_reg.clone(),
-                                            aux1_reg.clone(),
-                                            arg2.clone(),
-                                        ),
-                                    };
+                                        let (address_low, address_high) = split_u16_to_strings(address);
 
-                                    let new_camp_4 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(
-                                                match instr_camp.instruction.token {
-                                                    Token::PseudoInstruction(PseudoInstruction::Lw) => Instruction::Lab,
-                                                    Token::PseudoInstruction(PseudoInstruction::Sw) => Instruction::Sab,
-                                                    _ => unreachable!(),
+                                        let (offset_low, offset_high) = split_u16_to_strings(offset);
+
+                                        // la label
+
+                                        let new_camp_1 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_low),
+                                                    position: arg2.position.clone(),
                                                 }
                                             ),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            arg1.clone(),
-                                            aux1_reg.clone(),
-                                        ),
-                                    };
+                                        };
 
-                                    let new_camp_5 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lli),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux2_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral("0x01".to_string()),
-                                                position: arg3.position.clone(),
-                                            }
-                                        ),
-                                    };
-
-                                    let new_camp_6 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lai),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux2_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral("0x00".to_string()),
-                                                position: arg3.position.clone(),
-                                            }
-                                        ),
-                                    };
-
-                                    let new_camp_7 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Add),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Three(
-                                            aux1_reg.clone(),
-                                            aux1_reg.clone(),
-                                            aux2_reg.clone(),
-                                        ),
-                                    };
-
-                                    let new_camp_8 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(
-                                                match instr_camp.instruction.token {
-                                                    Token::PseudoInstruction(PseudoInstruction::Lw) => Instruction::Llb,
-                                                    Token::PseudoInstruction(PseudoInstruction::Sw) => Instruction::Slb,
-                                                    _ => unreachable!(),
+                                        let new_camp_2 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux1_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(address_high),
+                                                    position: arg2.position.clone(),
                                                 }
                                             ),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            arg1.clone(), 
-                                            aux1_reg.clone()
-                                        ),
-                                    };
+                                        };
 
-                                    ast.instr_field[instr_counter] = new_camp_1;
-                                    ast.instr_field[instr_counter + 1] = new_camp_2;
-                                    ast.instr_field[instr_counter + 2] = new_camp_3;
-                                    ast.instr_field[instr_counter + 3] = new_camp_4;
-                                    ast.instr_field[instr_counter + 4] = new_camp_5;
-                                    ast.instr_field[instr_counter + 5] = new_camp_6;
-                                    ast.instr_field[instr_counter + 6] = new_camp_7;
-                                    ast.instr_field[instr_counter + 7] = new_camp_8;
+                                        // li offset
+
+                                        let new_camp_3 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_low),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_4 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral(offset_high),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        // add $aux1, $aux1, $aux2
+
+                                        let new_camp_5 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Add),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Three(
+                                                aux1_reg.clone(),
+                                                aux1_reg.clone(),
+                                                aux2_reg.clone(),
+                                            ),
+                                        };
+
+                                        let new_camp_6 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(
+                                                    match instr_camp.instruction.token {
+                                                        Token::PseudoInstruction(PseudoInstruction::Lw) => Instruction::Lab,
+                                                        Token::PseudoInstruction(PseudoInstruction::Sw) => Instruction::Sab,
+                                                        _ => unreachable!(),
+                                                    }
+                                                ),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                arg1.clone(),
+                                                aux1_reg.clone(),
+                                            ),
+                                        };
+
+                                        // li $aux2, 0x01
+
+                                        let new_camp_7 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lli),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral("0x01".to_string()),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_8 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Lai),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                aux2_reg.clone(),
+                                                PositionedToken {
+                                                    token: Token::NumberLiteral("0x00".to_string()),
+                                                    position: arg3.position.clone(),
+                                                }
+                                            ),
+                                        };
+
+                                        let new_camp_9 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(Instruction::Add),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Three(
+                                                aux1_reg.clone(),
+                                                aux1_reg.clone(),
+                                                aux2_reg.clone(),
+                                            ),
+                                        };
+
+                                        let new_camp_10 = InstrCamp {
+                                            label_declarations: Vec::new(),
+                                            instruction: PositionedToken {
+                                                token: Token::Instruction(
+                                                    match instr_camp.instruction.token {
+                                                        Token::PseudoInstruction(PseudoInstruction::Lw) => Instruction::Llb,
+                                                        Token::PseudoInstruction(PseudoInstruction::Sw) => Instruction::Slb,
+                                                        _ => unreachable!(),
+                                                    }
+                                                ),
+                                                position: instr_camp.instruction.position.clone(),
+                                            },
+                                            sequence: Sequence::Two(
+                                                arg1.clone(), 
+                                                aux1_reg.clone()
+                                            ),
+                                        };
+
+                                        ast.instr_field[instr_counter] = new_camp_1;
+                                        ast.instr_field[instr_counter + 1] = new_camp_2;
+                                        ast.instr_field[instr_counter + 2] = new_camp_3;
+                                        ast.instr_field[instr_counter + 3] = new_camp_4;
+                                        ast.instr_field[instr_counter + 4] = new_camp_5;
+                                        ast.instr_field[instr_counter + 5] = new_camp_6;
+                                        ast.instr_field[instr_counter + 6] = new_camp_7;
+                                        ast.instr_field[instr_counter + 7] = new_camp_8;
+                                        ast.instr_field[instr_counter + 8] = new_camp_9;
+                                        ast.instr_field[instr_counter + 9] = new_camp_10;
+                                    } else {
+                                        unreachable!()
+                                    }
                                 } else {
                                     unreachable!()
                                 }

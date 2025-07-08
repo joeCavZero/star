@@ -52,7 +52,7 @@ impl Executable for Star {
                             let (res, is_carry) = reg2_v.overflowing_add(reg3_v);
                             self.registers.set(reg1, res);
                             self.registers.carry = if is_carry { 1 } else { 0 };
-                        
+                            
                             self.increment_program_counter();
                         }
                         Instruction::Sub => {
@@ -296,6 +296,7 @@ impl Executable for Star {
                                 Ok(_) => {}
                                 Err(e) => self.exit_with_positional_error(e.as_str(), instruction_position),
                             }
+                            
                             self.increment_program_counter();
                         }
 
@@ -304,7 +305,7 @@ impl Executable for Star {
                             let reg2_v = self.registers.get(reg2);
 
                             let address = reg1_v.wrapping_add(reg2_v);
-                            println!("Jumping to address: {}", address);
+                            
                             self.registers.program_counter = address;
                         }
                         
@@ -322,8 +323,58 @@ impl Executable for Star {
                     match instruction {
                         Instruction::Mcall => {
                             match self.registers.aux1 {
-                                1 => {
+                                0 => { // print register as u16
                                     print!("{}", self.registers.aux2);
+                                    io::stdout().flush().unwrap();
+                                }
+                                1 => { // print register as i16
+                                    let value: i16 = unsafe { transmute::<u16, i16>(self.registers.aux2) };
+                                    print!("{}", value);
+                                    io::stdout().flush().unwrap();
+                                }
+                                2 => { // read 16 bit integer
+                                    let mut input = String::new();
+                                    io::stdin().read_line(&mut input).unwrap();
+                                    match u16_from_string(input.trim().to_string()) {
+                                        Ok(value) => {
+                                            self.registers.aux2 = value;
+                                        }
+                                        Err(_) => {
+                                            self.exit_with_positional_error(
+                                                "Invalid input for 16 bit integer",
+                                                instruction_position,
+                                            );
+                                        }
+                                    }
+
+                                }
+                                3 => { // print register as char
+                                    let value: u16 = self.registers.aux2;
+                                    if value <= 255 {
+                                        let c = value as u8 as char;
+                                        print!("{}", c);
+                                        io::stdout().flush().unwrap();
+                                    } else {
+                                        self.exit_with_positional_error(
+                                            "Invalid character value",
+                                            instruction_position,
+                                        );
+                                    }
+                                }
+                                4 => { // read character
+                                    let mut input = String::new();
+                                    io::stdin().read_line(&mut input).unwrap();
+                                    let trimmed = input.trim();
+                                    if trimmed.len() == 1 {
+                                        let c = trimmed.chars().next().unwrap();
+                                        self.registers.aux2 = c as u16;
+                                    } else {
+                                        self.exit_with_positional_error(
+                                            "Invalid input for character",
+                                            instruction_position,
+                                        );
+                                    }
+
                                 }
                                 10 => {
                                     break 'execution_loop;
@@ -340,7 +391,6 @@ impl Executable for Star {
             }
             
         }
-        println!("");
         io::stdout().flush().unwrap();
     }
 
