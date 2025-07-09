@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use crate::star::utils::*;
 use crate::star::core::*;
-use crate::star::executable::*;
 use crate::star::generateable::*;
 use crate::star::resolveable::*;
 use crate::star::scanneable::*;
@@ -32,17 +31,12 @@ impl Star {
         }
     }
 
-    pub fn init(&mut self, base_file_path: &String) {
-        self.process(base_file_path);
-        self.execute();
-    }
-
-    pub fn process(&mut self, file_path: &String) {
+    pub fn process(&mut self, file_path: &String) -> (SymbolTable, usize) {
         let ptokens = self.scan(file_path);
         let mut ast = self.parse(&ptokens);
         let symbol_table = self.resolve(&mut ast);
-        self.generate(&ast);
-        println!("{:#?}", symbol_table);
+        let data_section_size = self.generate(&ast);
+        return (symbol_table, data_section_size);
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {

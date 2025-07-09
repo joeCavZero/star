@@ -8,3 +8,5 @@ pub mod symbolable;
 pub mod generateable;
 pub mod executable;
 pub mod math;
+
+pub use core::Star;

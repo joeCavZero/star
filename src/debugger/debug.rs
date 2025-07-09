@@ -53,3 +53,46 @@ pub fn position(file: String, line: u32, column: Option<u32>) -> String {
         text
     }
 }
+
+fn info() -> String {
+    let text = "[info]".to_string();
+    if let Some(color_level) = supports_color::on(Stream::Stdout) {
+        if color_level.has_16m || color_level.has_256 {
+            text
+                .bold()
+                .bright_cyan()
+                .to_string()
+        } else {
+            text
+        }
+    } else {
+        text
+    }
+}
+
+pub fn message(msg: &str) {
+    print!(
+        "\n{} {}",
+        interpreter(),
+        msg,
+    );
+}
+
+pub fn info_message(inf: &str) {
+    print!(
+        "\n{} {} {}",
+        interpreter(),
+        info(),
+        inf,
+    );
+}
+
+pub fn exit_with_error(err: &str) {
+    println!(
+        "\n{} {} {}",
+        interpreter(),
+        error(),
+        err,
+    );
+    std::process::exit(0);
+}

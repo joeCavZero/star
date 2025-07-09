@@ -1,6 +1,7 @@
-use star::star::core::Star;
+use star::cli::*;
 
 fn main() {
-    let mut star = Star::new();
-    star.init(&"test.asm".to_string());
+    let mut cli = Cli::new();
+    cli.scan();
+    cli.run();
 }

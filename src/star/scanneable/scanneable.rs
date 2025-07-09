@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use crate::debugger;
 use crate::star::core::*;
 use crate::star::utils::*;
 use crate::star::debuggable::*;
@@ -52,7 +53,7 @@ impl Scanneable for Star {
         let absolute_file_path: String = match fs::canonicalize(file_path_to_include) {
             Ok(path) => path.to_str().unwrap_or(file_path_to_include).to_string(),
             Err(_) => {
-                self.exit_with_error(&format!(
+                debugger::exit_with_error(&format!(
                     "The file {} does not exist or could not be read",
                     file_path_to_include
                 ));
@@ -71,7 +72,7 @@ impl Scanneable for Star {
 
         // ==== CHECKING FOR IMPORT CYCLES ====
         if processing_stack.contains(&file_id) {
-            self.exit_with_error(
+            debugger::exit_with_error(
                 &format!(
                     "Include cycle detected: [{} -> {}]",
                     including_file_path.beautiful_path(),
@@ -87,7 +88,7 @@ impl Scanneable for Star {
             Err((err, position_option)) => {
                 match position_option {
                     Some(position) => self.exit_with_positional_error(&err, position),
-                    None => self.exit_with_error(&err),
+                    None => debugger::exit_with_error(&err),
                 }
                 return Vec::new();
             }

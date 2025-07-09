@@ -11,20 +11,23 @@ use crate::star::parseable::*;
 use crate::star::utils::*;
 
 pub trait Generateable {
-    fn generate(&mut self, ast: &Ast);
-    fn generate_data_memory(&mut self, ast: &Ast);
+    fn generate(&mut self, ast: &Ast) -> usize;
+    fn generate_data_memory(&mut self, ast: &Ast) -> usize;
     fn generate_instruction_memory(&mut self, ast: &Ast);
 }
 
 impl Generateable for Star {
-    fn generate(&mut self, ast: &Ast) {
-        self.generate_data_memory(ast);
+    fn generate(&mut self, ast: &Ast) -> usize {
+        let data_section_size = self.generate_data_memory(ast);
         self.generate_instruction_memory(ast);
+        return data_section_size;
     }
 
-    fn generate_data_memory(&mut self, ast: &Ast) {
+    fn generate_data_memory(&mut self, ast: &Ast) -> usize {
+        let mut is_data_section_empty = true;
         let mut data_memory_pointer: usize = 0;
         for data_camp in ast.data_field.iter() {
+            is_data_section_empty = false;
             match data_camp.directive.token {
                 Token::Directive(Directive::Byte)
                 | Token::Directive(Directive::Word)
@@ -160,6 +163,12 @@ impl Generateable for Star {
                 }
                 _ => unreachable!(),
             }
+        }
+    
+        if is_data_section_empty {
+            return 0;
+        } else {
+            return data_memory_pointer;
         }
     }
 

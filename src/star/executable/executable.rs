@@ -2,6 +2,7 @@ use std::io;
 use std::io::Write;
 use std::mem::transmute;
 
+use crate::debugger;
 use crate::star::debuggable::*;
 use crate::star::generateable::*;
 use crate::star::math::*;
@@ -26,7 +27,7 @@ impl Executable for Star {
         let instruction_memory_len = match u16::try_from( self.instruction_memory.len() ) {
             Ok(len) => len,
             Err(_) => {
-                self.exit_with_error(
+                debugger::exit_with_error(
                     "Instruction memory length exceeds maximum size of 16 bits",
                 );
                 unreachable!();
@@ -143,7 +144,7 @@ impl Executable for Star {
                                             self.registers.program_counter = new_pc;
                                         }
                                         None => {
-                                            self.exit_with_error("Program counter overflow");
+                                            debugger::exit_with_error("Program counter overflow");
                                         }
                                     }
                                 } else {
@@ -674,7 +675,7 @@ impl Executable for Star {
                 self.registers.program_counter = new_pc;
             }
             None => {
-                self.exit_with_error("Program counter overflow");
+                debugger::exit_with_error("Program counter overflow");
             }
         }
     }
