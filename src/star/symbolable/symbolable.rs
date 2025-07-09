@@ -4,15 +4,16 @@ use crate::star::core::*;
 use crate::star::debuggable::*;
 use crate::star::math::*;
 use crate::star::parseable::*;
+use crate::star::resolveable::*;
 use crate::star::utils::*;
 
 pub trait Symbolable {
-    fn get_symbol_table(&self, ast: &mut Ast) -> HashMap<String, u16>;
+    fn get_symbol_table(&self, ast: &mut Ast) -> SymbolTable;
 }
 
 impl Symbolable for Star {
-    fn get_symbol_table(&self, ast: &mut Ast) -> HashMap<String, u16> {
-        let mut symbol_table: HashMap<String, u16> = HashMap::new();
+    fn get_symbol_table(&self, ast: &mut Ast) -> SymbolTable {
+        let mut symbol_table: SymbolTable = HashMap::new();
         // >>>> DATA MEMORY <<<<
         let mut data_memory_counter: usize = 0;
         for data_camp in ast.data_field.iter() {

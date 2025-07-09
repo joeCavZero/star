@@ -169,7 +169,7 @@ impl Generateable for Star {
                 match instruction.format() {
                     Format::Trinity => {
                         if let Sequence::Three(reg_ptk_1, reg_ptk_2, reg_ptk_3) = instr_camp.sequence.clone() {
-                            if let (Token::Register(reg1), Token::Register(reg2), Token::Register(reg3)) = (reg_ptk_1.token.clone(), reg_ptk_2.token.clone(), reg_ptk_3.token.clone()) {
+                            if let (Token::GeneralRegister(reg1), Token::GeneralRegister(reg2), Token::GeneralRegister(reg3)) = (reg_ptk_1.token.clone(), reg_ptk_2.token.clone(), reg_ptk_3.token.clone()) {
                                 let format: u16 = fold_trinity(
                                     instruction,
                                     reg1,
@@ -191,7 +191,7 @@ impl Generateable for Star {
                     }
                     Format::Hime => {
                         if let Sequence::Two(reg_ptk, imm_ptk) = instr_camp.sequence.clone() {
-                            if let (Token::Register(reg), Token::NumberLiteral(imm_string)) = (reg_ptk.token.clone(), imm_ptk.token.clone()) {
+                            if let (Token::GeneralRegister(reg), Token::NumberLiteral(imm_string)) = (reg_ptk.token.clone(), imm_ptk.token.clone()) {
                                 match u8_from_string(imm_string) {
                                     Ok(imm) => {
                                         let format: u16 = fold_hime(
@@ -222,7 +222,7 @@ impl Generateable for Star {
                     }
                     Format::Pair => {
                         if let Sequence::Two(reg_ptk_1, reg_ptk_2) = instr_camp.sequence.clone() {
-                            if let (Token::Register(reg1), Token::Register(reg2)) = (reg_ptk_1.token.clone(), reg_ptk_2.token.clone()) {
+                            if let (Token::GeneralRegister(reg1), Token::GeneralRegister(reg2)) = (reg_ptk_1.token.clone(), reg_ptk_2.token.clone()) {
                                 let format: u16 = fold_pair(
                                     instruction,
                                     reg1,
@@ -243,7 +243,7 @@ impl Generateable for Star {
                     }
                     Format::Clover => {
                         if let Sequence::One(reg_ptk) = instr_camp.sequence.clone() {
-                            if let Token::Register(reg) = reg_ptk.token.clone() {
+                            if let Token::GeneralRegister(reg) = reg_ptk.token.clone() {
                                 let format: u16 = fold_clover(
                                     instruction,
                                     reg,

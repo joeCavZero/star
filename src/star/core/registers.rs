@@ -1,4 +1,4 @@
-use crate::star::utils::Register;
+use crate::star::{core::DATA_MEMORY_SIZE, utils::GeneralRegister};
 
 #[derive(Debug, Clone)]
 pub struct Registers {
@@ -28,64 +28,64 @@ impl Registers {
     pub fn new() -> Self {
         Self {
             zero: 0,
-            a: 0,
-            b: 0,
-            c: 0,
-            d: 0,
-            e: 0,
-            f: 0,
-            g: 0,
-            aux1: 0,
-            aux2: 0,
-            aux3: 0,
-            carry: 0,
-            high: 0,
-            low: 0,
-            return_address: 0,
-            stack_pointer: 0,
+            a: rand::random::<u16>(),
+            b: rand::random::<u16>(),
+            c: rand::random::<u16>(),
+            d: rand::random::<u16>(),
+            e: rand::random::<u16>(),
+            f: rand::random::<u16>(),
+            g: rand::random::<u16>(),
+            aux1: rand::random::<u16>(),
+            aux2: rand::random::<u16>(),
+            aux3: rand::random::<u16>(),
+            carry: rand::random::<u16>(),
+            high: rand::random::<u16>(),
+            low: rand::random::<u16>(),
+            return_address: rand::random::<u16>(),
+            stack_pointer: (DATA_MEMORY_SIZE - 1) as u16,
             program_counter: 0,
         }
     }
 
-    pub fn get(&self, register: Register) -> u16 {
+    pub fn get(&self, register: GeneralRegister) -> u16 {
         match register {
-            Register::Zero => self.zero,
-            Register::A => self.a,
-            Register::B => self.b,
-            Register::C => self.c,
-            Register::D => self.d,
-            Register::E => self.e,
-            Register::F => self.f,
-            Register::G => self.g,
-            Register::Aux1 => self.aux1,
-            Register::Aux2 => self.aux2,
-            Register::Aux3 => self.aux3,
-            Register::Carry => self.carry,
-            Register::High => self.high,
-            Register::Low => self.low,
-            Register::ReturnAddress => self.return_address,
-            Register::StackPointer => self.stack_pointer,
+            GeneralRegister::Zero => self.zero,
+            GeneralRegister::A => self.a,
+            GeneralRegister::B => self.b,
+            GeneralRegister::C => self.c,
+            GeneralRegister::D => self.d,
+            GeneralRegister::E => self.e,
+            GeneralRegister::F => self.f,
+            GeneralRegister::G => self.g,
+            GeneralRegister::Aux1 => self.aux1,
+            GeneralRegister::Aux2 => self.aux2,
+            GeneralRegister::Aux3 => self.aux3,
+            GeneralRegister::Carry => self.carry,
+            GeneralRegister::High => self.high,
+            GeneralRegister::Low => self.low,
+            GeneralRegister::ReturnAddress => self.return_address,
+            GeneralRegister::StackPointer => self.stack_pointer,
         }
     }
 
-    pub fn set(&mut self, register: Register, value: u16) {
+    pub fn set(&mut self, register: GeneralRegister, value: u16) {
         match register {
-            Register::Zero => {}
-            Register::A => self.a = value,
-            Register::B => self.b = value,
-            Register::C => self.c = value,
-            Register::D => self.d = value,
-            Register::E => self.e = value,
-            Register::F => self.f = value,
-            Register::G => self.g = value,
-            Register::Aux1 => self.aux1 = value,
-            Register::Aux2 => self.aux2 = value,
-            Register::Aux3 => self.aux3 = value,
-            Register::Carry => self.carry = value,
-            Register::High => self.high = value,
-            Register::Low => self.low = value,
-            Register::ReturnAddress => self.return_address = value,
-            Register::StackPointer => self.stack_pointer = value,
+            GeneralRegister::Zero => {}
+            GeneralRegister::A => self.a = value,
+            GeneralRegister::B => self.b = value,
+            GeneralRegister::C => self.c = value,
+            GeneralRegister::D => self.d = value,
+            GeneralRegister::E => self.e = value,
+            GeneralRegister::F => self.f = value,
+            GeneralRegister::G => self.g = value,
+            GeneralRegister::Aux1 => self.aux1 = value,
+            GeneralRegister::Aux2 => self.aux2 = value,
+            GeneralRegister::Aux3 => self.aux3 = value,
+            GeneralRegister::Carry => self.carry = value,
+            GeneralRegister::High => self.high = value,
+            GeneralRegister::Low => self.low = value,
+            GeneralRegister::ReturnAddress => self.return_address = value,
+            GeneralRegister::StackPointer => self.stack_pointer = value,
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::star::utils::*;
 
-pub fn fold_trinity(instruction: Instruction, reg1: Register, reg2: Register, reg3: Register) -> u16 {
+pub fn fold_trinity(instruction: Instruction, reg1: GeneralRegister, reg2: GeneralRegister, reg3: GeneralRegister) -> u16 {
     let mut format = 0b0000_0000_0000_0000;
     format |= instruction.opcode();
     format |= reg1.code() << 4;
@@ -9,7 +9,7 @@ pub fn fold_trinity(instruction: Instruction, reg1: Register, reg2: Register, re
     format
 }
 
-pub fn fold_hime(instruction: Instruction, reg1: Register, immediate: u8) -> u16 {
+pub fn fold_hime(instruction: Instruction, reg1: GeneralRegister, immediate: u8) -> u16 {
     let mut format = 0b0000_0000_0000_0000;
     format |= instruction.opcode();
     format |= reg1.code() << 4;
@@ -17,7 +17,7 @@ pub fn fold_hime(instruction: Instruction, reg1: Register, immediate: u8) -> u16
     format
 }
 
-pub fn fold_pair(instruction: Instruction, reg1: Register, reg2: Register) -> u16 {
+pub fn fold_pair(instruction: Instruction, reg1: GeneralRegister, reg2: GeneralRegister) -> u16 {
     let mut format = 0b0000_0000_0000_0000;
     format |= instruction.opcode();
     format |= reg1.code() << 8;
@@ -25,7 +25,7 @@ pub fn fold_pair(instruction: Instruction, reg1: Register, reg2: Register) -> u1
     format
 }
 
-pub fn fold_clover(instruction: Instruction, reg: Register) -> u16 {
+pub fn fold_clover(instruction: Instruction, reg: GeneralRegister) -> u16 {
     let mut format = 0b0000_0000_0000_0000;
     format |= instruction.opcode();
     format |= reg.code() << 12;

@@ -3,13 +3,13 @@ use crate::star::{parseable::Sequence, utils::*};
 pub fn read_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma) => {
                         if let Token::Comma = comma.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Register(_) = tk2.token {
+                                    if let Token::GeneralRegister(_) = tk2.token {
                                         Ok(Sequence::Two(tk1.clone(), tk2.clone()))
                                     } else {
                                         Err(("Expected a register after comma in this sequence".to_string(), tk2.position))
@@ -34,7 +34,7 @@ pub fn read_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, bas
 pub fn read_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma) => {
                         if let Token::Comma = comma.token {
@@ -65,19 +65,19 @@ pub fn read_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, bas
 pub fn read_r_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma1) => {
                         if let Token::Comma = comma1.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Register(_) = tk2.token {
+                                    if let Token::GeneralRegister(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
                                             Some(comma2) => {
                                                 if let Token::Comma = comma2.token {
                                                     match ptokens.get(start_index + 4) {
                                                         Some(tk3) => {
-                                                            if let Token::Register(_) = tk3.token {
+                                                            if let Token::GeneralRegister(_) = tk3.token {
                                                                 Ok( Sequence::Three(tk1.clone(), tk2.clone(), tk3.clone() ))
                                                             } else {
                                                                 Err(("Expected a register after second comma in this sequence".to_string(), tk3.position))
@@ -114,7 +114,7 @@ pub fn read_r_r_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, b
 pub fn read_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma) => {
                         if let Token::Comma = comma.token {
@@ -147,13 +147,13 @@ pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: us
     // e.g.: lw $r1, $r2[10]
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma) => {
                         if let Token::Comma = comma.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Register(_) = tk2.token {
+                                    if let Token::GeneralRegister(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
                                             Some(left_square_bracket) => {
                                                 if let Token::LeftSquareBracket = left_square_bracket.token {
@@ -208,7 +208,7 @@ pub fn read_r_id_br_n_br(ptokens: &Vec<PositionedToken>, start_index: usize, bas
     // e.g.: $r1, label[10]
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma) => {
                         if let Token::Comma = comma.token {
@@ -266,7 +266,7 @@ pub fn read_r_id_br_n_br(ptokens: &Vec<PositionedToken>, start_index: usize, bas
 pub fn read_r_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 Ok(Sequence::One(tk1.clone()))
             } else {
                 Err(("Expected a register in this sequence".to_string(), base_position))
@@ -292,13 +292,13 @@ pub fn read_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base
 pub fn read_r_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma1) => {
                         if let Token::Comma = comma1.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Register(_) = tk2.token {
+                                    if let Token::GeneralRegister(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
                                             Some(comma2) => {
                                                 if let Token::Comma = comma2.token {
@@ -341,13 +341,13 @@ pub fn read_r_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, 
 pub fn read_r_r_n_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     match ptokens.get(start_index) {
         Some(tk1) => {
-            if let Token::Register(_) = tk1.token {
+            if let Token::GeneralRegister(_) = tk1.token {
                 match ptokens.get(start_index + 1) {
                     Some(comma1) => {
                         if let Token::Comma = comma1.token {
                             match ptokens.get(start_index + 2) {
                                 Some(tk2) => {
-                                    if let Token::Register(_) = tk2.token {
+                                    if let Token::GeneralRegister(_) = tk2.token {
                                         match ptokens.get(start_index + 3) {
                                             Some(comma2) => {
                                                 if let Token::Comma = comma2.token {

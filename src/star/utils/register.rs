@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Register {
+pub enum GeneralRegister {
     Zero,
     A,
     B,
@@ -18,46 +18,46 @@ pub enum Register {
     StackPointer,
 }
 
-impl Register {
+impl GeneralRegister {
     pub fn code(&self) -> u16 {
         match self {
-            Register::Zero =>           0b0000_0000_0000_0000,
-            Register::A =>              0b0000_0000_0000_0001,
-            Register::B =>              0b0000_0000_0000_0010,
-            Register::C =>              0b0000_0000_0000_0011,
-            Register::D =>              0b0000_0000_0000_0100,
-            Register::E =>              0b0000_0000_0000_0101,
-            Register::F =>              0b0000_0000_0000_0110,
-            Register::G =>              0b0000_0000_0000_0111,
-            Register::Aux1 =>           0b0000_0000_0000_1000,
-            Register::Aux2 =>           0b0000_0000_0000_1001,
-            Register::Aux3 =>           0b0000_0000_0000_1010,
-            Register::Carry =>          0b0000_0000_0000_1011,
-            Register::High =>           0b0000_0000_0000_1100,
-            Register::Low =>            0b0000_0000_0000_1101,
-            Register::ReturnAddress =>  0b0000_0000_0000_1110,
-            Register::StackPointer =>   0b0000_0000_0000_1111,
+            GeneralRegister::Zero =>           0b0000_0000_0000_0000,
+            GeneralRegister::A =>              0b0000_0000_0000_0001,
+            GeneralRegister::B =>              0b0000_0000_0000_0010,
+            GeneralRegister::C =>              0b0000_0000_0000_0011,
+            GeneralRegister::D =>              0b0000_0000_0000_0100,
+            GeneralRegister::E =>              0b0000_0000_0000_0101,
+            GeneralRegister::F =>              0b0000_0000_0000_0110,
+            GeneralRegister::G =>              0b0000_0000_0000_0111,
+            GeneralRegister::Aux1 =>           0b0000_0000_0000_1000,
+            GeneralRegister::Aux2 =>           0b0000_0000_0000_1001,
+            GeneralRegister::Aux3 =>           0b0000_0000_0000_1010,
+            GeneralRegister::Carry =>          0b0000_0000_0000_1011,
+            GeneralRegister::High =>           0b0000_0000_0000_1100,
+            GeneralRegister::Low =>            0b0000_0000_0000_1101,
+            GeneralRegister::ReturnAddress =>  0b0000_0000_0000_1110,
+            GeneralRegister::StackPointer =>   0b0000_0000_0000_1111,
         }
     } 
 
     pub fn from_code(code: u16) -> Self {
         match code {
-            0b0000_0000_0000_0000 => Register::Zero,
-            0b0000_0000_0000_0001 => Register::A,
-            0b0000_0000_0000_0010 => Register::B,
-            0b0000_0000_0000_0011 => Register::C,
-            0b0000_0000_0000_0100 => Register::D,
-            0b0000_0000_0000_0101 => Register::E,
-            0b0000_0000_0000_0110 => Register::F,
-            0b0000_0000_0000_0111 => Register::G,
-            0b0000_0000_0000_1000 => Register::Aux1,
-            0b0000_0000_0000_1001 => Register::Aux2,
-            0b0000_0000_0000_1010 => Register::Aux3,
-            0b0000_0000_0000_1011 => Register::Carry,
-            0b0000_0000_0000_1100 => Register::High,
-            0b0000_0000_0000_1101 => Register::Low,
-            0b0000_0000_0000_1110 => Register::ReturnAddress,
-            0b0000_0000_0000_1111 => Register::StackPointer,
+            0b0000_0000_0000_0000 => GeneralRegister::Zero,
+            0b0000_0000_0000_0001 => GeneralRegister::A,
+            0b0000_0000_0000_0010 => GeneralRegister::B,
+            0b0000_0000_0000_0011 => GeneralRegister::C,
+            0b0000_0000_0000_0100 => GeneralRegister::D,
+            0b0000_0000_0000_0101 => GeneralRegister::E,
+            0b0000_0000_0000_0110 => GeneralRegister::F,
+            0b0000_0000_0000_0111 => GeneralRegister::G,
+            0b0000_0000_0000_1000 => GeneralRegister::Aux1,
+            0b0000_0000_0000_1001 => GeneralRegister::Aux2,
+            0b0000_0000_0000_1010 => GeneralRegister::Aux3,
+            0b0000_0000_0000_1011 => GeneralRegister::Carry,
+            0b0000_0000_0000_1100 => GeneralRegister::High,
+            0b0000_0000_0000_1101 => GeneralRegister::Low,
+            0b0000_0000_0000_1110 => GeneralRegister::ReturnAddress,
+            0b0000_0000_0000_1111 => GeneralRegister::StackPointer,
             _ => unreachable!(),
             
         }

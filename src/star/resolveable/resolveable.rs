@@ -6,19 +6,23 @@ use crate::star::math::*;
 use crate::star::parseable::*;
 use crate::star::symbolable::*;
 use crate::star::utils::*;
+
+pub type SymbolTable = HashMap<String, u16>;
+
 pub trait Resolveable {
-    fn resolve(&self, ast: &mut Ast);
+    fn resolve(&self, ast: &mut Ast)  -> SymbolTable;
 
     fn resolve_space(&self, ast: &mut Ast);
     
-    fn resolve_pseudo_instructions(&self, ast: &mut Ast, symbol_table: &HashMap<String, u16>);
+    fn resolve_pseudo_instructions(&self, ast: &mut Ast, symbol_table: &SymbolTable);
 }
 
 impl Resolveable for Star {
-    fn resolve(&self, ast: &mut Ast) {
+    fn resolve(&self, ast: &mut Ast) -> SymbolTable {
         self.resolve_space(ast);
-        let symbol_table: HashMap<String, u16> = self.get_symbol_table(ast);
+        let symbol_table: SymbolTable = self.get_symbol_table(ast);
         self.resolve_pseudo_instructions(ast, &symbol_table);
+        symbol_table
     }
     fn resolve_space(&self, ast: &mut Ast) {
         let mut instr_field_len = ast.instr_field.len();
@@ -29,7 +33,7 @@ impl Resolveable for Star {
                 None => break,
             };
             let zero_reg = PositionedToken {
-                token: Token::Register(Register::Zero),
+                token: Token::GeneralRegister(GeneralRegister::Zero),
                 position: instr_camp.instruction.position,
             };
             let nope_camp = InstrCamp {
@@ -149,7 +153,7 @@ impl Resolveable for Star {
         }
     }
 
-    fn resolve_pseudo_instructions(&self, ast: &mut Ast, symbol_table: &HashMap<String, u16>) {
+    fn resolve_pseudo_instructions(&self, ast: &mut Ast, symbol_table: &SymbolTable) {
         let mut instr_counter: usize = 0;
         while instr_counter < ast.instr_field.len() {
             let instr_camp = match ast.instr_field.get_mut(instr_counter) {
@@ -157,24 +161,24 @@ impl Resolveable for Star {
                 None => break,
             };
             let zero_reg = PositionedToken {
-                token: Token::Register(Register::Zero),
+                token: Token::GeneralRegister(GeneralRegister::Zero),
                 position: instr_camp.instruction.position,
             };
             let low_reg = PositionedToken {
-                token: Token::Register(Register::Low),
+                token: Token::GeneralRegister(GeneralRegister::Low),
                 position: instr_camp.instruction.position,
             };
             let high_reg = PositionedToken {
-                token: Token::Register(Register::High),
+                token: Token::GeneralRegister(GeneralRegister::High),
                 position: instr_camp.instruction.position,
             };
 
             let aux1_reg = PositionedToken {
-                token: Token::Register(Register::Aux1),
+                token: Token::GeneralRegister(GeneralRegister::Aux1),
                 position: instr_camp.instruction.position,
             };
             let aux2_reg = PositionedToken {
-                token: Token::Register(Register::Aux2),
+                token: Token::GeneralRegister(GeneralRegister::Aux2),
                 position: instr_camp.instruction.position,
             };
 
@@ -243,7 +247,7 @@ impl Resolveable for Star {
                             instr_camp.instruction.token = Token::Instruction(Instruction::Jar);
                             instr_camp.sequence = Sequence::Two(
                                 PositionedToken {
-                                    token: Token::Register(Register::ReturnAddress),
+                                    token: Token::GeneralRegister(GeneralRegister::ReturnAddress),
                                     position: instr_camp.instruction.position.clone(),
                                 },
                                 zero_reg.clone(),

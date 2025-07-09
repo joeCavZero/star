@@ -19,9 +19,13 @@ pub struct Star {
 
 impl Star {
     pub fn new() -> Self {
+        let mut data_memory = [0; DATA_MEMORY_SIZE];
+        for b in data_memory.iter_mut() {
+            *b = rand::random::<u8>();
+        }
         Self {
             file_table: HashMap::new(),
-            data_memory: [0; DATA_MEMORY_SIZE],
+            data_memory: data_memory,
             instruction_memory: Vec::new(),
             position_memory: Vec::new(),
             registers: Registers::new(),
@@ -31,19 +35,14 @@ impl Star {
     pub fn init(&mut self, base_file_path: &String) {
         self.process(base_file_path);
         self.execute();
-        //println!("{:#?}", self.registers);
-        //println!("Data Memory (first 20 bytes): {:?}", &self.data_memory[..20]);
-        //println!("{:#?}", ast);
-        //for instr in self.instruction_memory.iter() {
-        //    println!("{:016b}", instr.format);
-        //}
     }
 
     pub fn process(&mut self, file_path: &String) {
         let ptokens = self.scan(file_path);
         let mut ast = self.parse(&ptokens);
-        self.resolve(&mut ast);
+        let symbol_table = self.resolve(&mut ast);
         self.generate(&ast);
+        println!("{:#?}", symbol_table);
     }
 
     pub fn get_file_id_by_path(&self, file_path: &String) -> Option<u32> {

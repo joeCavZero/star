@@ -3,7 +3,7 @@ use crate::star::utils::*;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Token {
     Processor(Processor),
-    Register(Register),
+    GeneralRegister(GeneralRegister),
     Instruction(Instruction),
     PseudoInstruction(PseudoInstruction),
     LabelDeclaration(String),
@@ -116,22 +116,22 @@ impl Token {
             // ==== REGISTERS ====
             _ if tkn_string.starts_with("$") => {
                 match tkn_string.as_str() {
-                    "$zero" | "$0" => Ok(Token::Register(Register::Zero)),
-                    "$a" | "$1" => Ok(Token::Register(Register::A)),
-                    "$b" | "$2" => Ok(Token::Register(Register::B)),
-                    "$c" | "$3" => Ok(Token::Register(Register::C)),
-                    "$d" | "$4" => Ok(Token::Register(Register::D)),
-                    "$e" | "$5" => Ok(Token::Register(Register::E)),
-                    "$f" | "$6" => Ok(Token::Register(Register::F)),
-                    "$g" | "$7" => Ok(Token::Register(Register::G)),
-                    "$aux1" | "$8" => Ok(Token::Register(Register::Aux1)),
-                    "$aux2" | "$9" => Ok(Token::Register(Register::Aux2)),
-                    "$aux3" | "$10" => Ok(Token::Register(Register::Aux3)),
-                    "$carry" | "$11" => Ok(Token::Register(Register::Carry)),
-                    "$high" | "$12" => Ok(Token::Register(Register::High)),
-                    "$low" | "$13" => Ok(Token::Register(Register::Low)),
-                    "$ra" | "$14" => Ok(Token::Register(Register::ReturnAddress)),
-                    "$sp" | "$15" => Ok(Token::Register(Register::StackPointer)),
+                    "$zero" | "$0" => Ok(Token::GeneralRegister(GeneralRegister::Zero)),
+                    "$a" | "$1" => Ok(Token::GeneralRegister(GeneralRegister::A)),
+                    "$b" | "$2" => Ok(Token::GeneralRegister(GeneralRegister::B)),
+                    "$c" | "$3" => Ok(Token::GeneralRegister(GeneralRegister::C)),
+                    "$d" | "$4" => Ok(Token::GeneralRegister(GeneralRegister::D)),
+                    "$e" | "$5" => Ok(Token::GeneralRegister(GeneralRegister::E)),
+                    "$f" | "$6" => Ok(Token::GeneralRegister(GeneralRegister::F)),
+                    "$g" | "$7" => Ok(Token::GeneralRegister(GeneralRegister::G)),
+                    "$aux1" | "$8" => Ok(Token::GeneralRegister(GeneralRegister::Aux1)),
+                    "$aux2" | "$9" => Ok(Token::GeneralRegister(GeneralRegister::Aux2)),
+                    "$aux3" | "$10" => Ok(Token::GeneralRegister(GeneralRegister::Aux3)),
+                    "$carry" | "$11" => Ok(Token::GeneralRegister(GeneralRegister::Carry)),
+                    "$high" | "$12" => Ok(Token::GeneralRegister(GeneralRegister::High)),
+                    "$low" | "$13" => Ok(Token::GeneralRegister(GeneralRegister::Low)),
+                    "$ra" | "$14" => Ok(Token::GeneralRegister(GeneralRegister::ReturnAddress)),
+                    "$sp" | "$15" => Ok(Token::GeneralRegister(GeneralRegister::StackPointer)),
                     _ => Err("Invalid register".to_string()),
                 }
             }
@@ -163,7 +163,13 @@ impl Token {
             }
 
             // ==== NUMBERS ====
-            _ if tkn_string.to_lowercase().starts_with("0x") || tkn_string.to_lowercase().starts_with("0b") || tkn_string.parse::<i32>().is_ok() => {
+            _ if tkn_string.to_lowercase().starts_with("0x") 
+            || tkn_string.to_lowercase().starts_with("0b") 
+            || (
+                !tkn_string.starts_with("_") &&
+                tkn_string.replace("_","").parse::<i64>().is_ok() 
+            )
+            => {
                 Ok(Token::NumberLiteral(tkn_string))
             }
 
