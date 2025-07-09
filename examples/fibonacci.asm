@@ -34,8 +34,6 @@ loop:
     move $a, $b                 # a := b
     move $b, $c                 # b := c
 
-    
-
     ja loop                     # jump address to loop
 print_comma:
     lb $aux2, comma[0]          # load comma into $aux2
