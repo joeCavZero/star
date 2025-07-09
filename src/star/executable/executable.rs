@@ -125,7 +125,7 @@ impl Executable for Star {
                         => {
                             let reg1_v = self.registers.get(reg1);
                             let reg2_v = self.registers.get(reg2);
-                            let reg3_v = unsafe { transmute::<u16, i16>(self.registers.get(reg3)) };
+                            let reg3_v = self.registers.get(reg3);
 
                             let condition: bool = match instruction {
                                 Instruction::Beqr => reg1_v == reg2_v,
@@ -138,28 +138,44 @@ impl Executable for Star {
                             };
 
                             if condition {
-                                if reg3_v >= 0 {
-                                    match self.registers.program_counter.checked_add(reg3_v as u16) {
-                                        Some(new_pc) => {
-                                            self.registers.program_counter = new_pc;
-                                        }
-                                        None => {
-                                            debugger::exit_with_error("Program counter overflow");
-                                        }
+                                match self.registers.program_counter.checked_add(1) {
+                                    Some(ra) => {
+                                        self.registers.return_address = ra
                                     }
-                                } else {
-                                    match self.registers.program_counter.checked_sub((-reg3_v) as u16) {
-                                        Some(new_pc) => {
-                                            self.registers.program_counter = new_pc;
-                                        }
-                                        None => {
-                                            self.registers.program_counter = 0;
-                                        }
-                                    }
+                                    None => self.exit_with_optional_positional_error(
+                                        "Return address overflow",
+                                        instruction_position_option,
+                                    ),
                                 }
+
+                                self.registers.program_counter = self.registers.program_counter.wrapping_add(reg3_v);
                             } else {
                                 self.increment_program_counter();
                             }
+
+                            //if condition {
+                            //    if reg3_v >= 0 {
+                            //        match self.registers.program_counter.checked_add(reg3_v as u16) {
+                            //            Some(new_pc) => {
+                            //                self.registers.program_counter = new_pc;
+                            //            }
+                            //            None => {
+                            //                debugger::exit_with_error("Program counter overflow");
+                            //            }
+                            //        }
+                            //    } else {
+                            //        match self.registers.program_counter.checked_sub((-reg3_v) as u16) {
+                            //            Some(new_pc) => {
+                            //                self.registers.program_counter = new_pc;
+                            //            }
+                            //            None => {
+                            //                self.registers.program_counter = 0;
+                            //            }
+                            //        }
+                            //    }
+                            //} else {
+                            //    self.increment_program_counter();
+                            //}
                         }
 
                         _ => unimplemented!(),
@@ -321,6 +337,16 @@ impl Executable for Star {
                             let reg2_v = self.registers.get(reg2);
 
                             let address = reg1_v.wrapping_add(reg2_v);
+                            
+                            match self.registers.program_counter.checked_add(1) {
+                                Some(ra) => {
+                                    self.registers.return_address = ra
+                                }
+                                None => self.exit_with_optional_positional_error(
+                                    "Return address overflow",
+                                    instruction_position_option,
+                                ),
+                            }
                             
                             self.registers.program_counter = address;
                         }
