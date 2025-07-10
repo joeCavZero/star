@@ -1,33 +1,43 @@
 pub fn shift_left_with_carry(value: u16, shift: u16) -> (u16, u16) {
+    /* 
+        se 0b_1000_0000_0000_0000 << 2 então:
+            - 1º u16 = 0b_0000_0000_0000_0000 (result)
+            - 2º u16 = 0b_0000_0000_0000_0010 (carry)
+        se 0b_0000_0000_0000_0001 << 32 então:
+            - 1º u16 = 0b_0000_0000_0000_0000 (result)
+            - 2º u16 = 0b_0000_0000_0000_0000 (carry)
+    */
     if shift == 0 {
         return (value, 0);
     }
-    let shift = shift % 32; // Normalize shift to avoid undefined behavior for large shifts
-    let res = if shift >= 16 { 0 } else { value.wrapping_shl(shift as u32) };
-    let carry = if shift == 16 {
-        value // For shift = 16, carry is the original value
-    } else if shift > 16 {
-        if shift % 16 == 0 {
-            0 // For shifts like 32, 48, etc., carry is 0
-        } else {
-            value.wrapping_shl((shift % 16) as u32) & ((1 << (shift % 16)) - 1)
-        }
-    } else {
-        (value >> (16 - shift)) & ((1 << shift) - 1)
-    };
-    (res, carry)
+    if shift >= 16 {
+        let carry = (value as u32).checked_shl(shift as u32).unwrap_or(0) >> 16;
+        return (0, carry as u16);
+    }
+
+    let result = value << shift;
+    let carry = value >> (16 - shift);
+    (result, carry)
 }
 
 pub fn shift_right_with_carry(value: u16, shift: u16) -> (u16, u16) {
+    /* 
+        se 0b_0000_0000_0000_1111 >> 3 então:
+            - 1º u16 = 0b_0000_0000_0000_0001 (result)
+            - 2º u16 = 0b_1110_0000_0000_0000 (carry)
+
+        se 0b_0000_0000_0000_0001 >> 32 então:
+            - 1º u16 = 0b_0000_0000_0000_0000 (result)
+            - 2º u16 = 0b_0000_0000_0000_0000 (carry)
+    */
     if shift == 0 {
         return (value, 0);
     }
-    let shift = shift % 32; // Normalize shift
-    let res = if shift >= 16 { 0 } else { value.wrapping_shr(shift as u32) };
-    let carry = if shift >= 16 {
-        value // For shift >= 16, carry is the original value
-    } else {
-        value & ((1 << shift) - 1)
-    };
-    (res, carry)
+    if shift >= 16 {
+        return (0, 0);
+    }
+
+    let result = value >> shift;
+    let carry = (value & ((1 << shift) - 1)) << (16 - shift);
+    (result, carry)
 }

@@ -41,9 +41,9 @@ pub enum Instruction {
     Sab, // store alt byte -- sab $r, $raddress
     Slb, // store low byte -- slb $r, $raddress
     
-    Jar, // jump absolute relative -- jar $ra, $a
     // ==== 1111_1111_OOOO_XXXX ====
         // DELETED: Br, // branch relative -- br $r
+        J, // jump -- j $rs
     // ==== 1111_1111_1111_OOOO ====
         // DELETED: Ret, // return -- ret
     Mcall, // machine call (syscall) -- mcall
@@ -85,11 +85,11 @@ impl Instruction {
             | Instruction::Llb
             | Instruction::Sab
             | Instruction::Slb
-            | Instruction::Jar
             => Format::Pair,
 
             // ==== CLOVER ====
-
+            Instruction::J 
+            => Format::Clover,
             // ==== ARK ====
             Instruction::Mcall 
             => Format::Ark,
@@ -130,9 +130,8 @@ impl Instruction {
             Instruction::Sab => 0b0000_0000_1000_1111,
             Instruction::Slb => 0b0000_0000_1001_1111,
 
-            Instruction::Jar => 0b0000_0000_1010_1111,
-
             // ==== CLOVER ====
+            Instruction::J => 0b0000_0000_1111_1111,
 
             // ==== ARK ====
             Instruction::Mcall => 0b1111_1111_1111_1111,
@@ -174,10 +173,9 @@ impl Instruction {
             0b_0000_0000_1000_1111 => Instruction::Sab,
             0b_0000_0000_1001_1111 => Instruction::Slb,
 
-            0b_0000_0000_1010_1111 => Instruction::Jar,
-
             // ==== CLOVER ====
-
+            0b_0000_0000_1111_1111 => Instruction::J,
+            
             // ==== ARK ====
             0b_1111_1111_1111_1111 => Instruction::Mcall,
 

@@ -1,3 +1,4 @@
+# program to read a string and print it in reverse order
 .data
     string_enter: .stringz "Enter a string --> "            # prompt for input
     string_output: .stringz "The string in reverse is --> " # output message

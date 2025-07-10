@@ -82,8 +82,17 @@ impl Resolveable for Star {
                         | PseudoInstruction::Shli
                         | PseudoInstruction::Shri
 
+                        | PseudoInstruction::Beqa
+                        | PseudoInstruction::Bneqa
+                        | PseudoInstruction::Blta
+                        | PseudoInstruction::Bgta
+                        | PseudoInstruction::Bltua
+                        | PseudoInstruction::Bgtua
+
                         | PseudoInstruction::Inc
                         | PseudoInstruction::Dec
+
+                        | PseudoInstruction::Ja
                         => {
                             for _ in 0..2 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
@@ -112,16 +121,8 @@ impl Resolveable for Star {
                         
 
                         // ==== +6 ====
-                        PseudoInstruction::Beqa
-                        | PseudoInstruction::Bneqa
-                        | PseudoInstruction::Blta
-                        | PseudoInstruction::Bgta
-                        | PseudoInstruction::Bltua
-                        | PseudoInstruction::Bgtua
 
-                        | PseudoInstruction::Lb
-
-                        | PseudoInstruction::Ja
+                        PseudoInstruction::Lb
                         => {
                             for _ in 0..6 {
                                 ast.instr_field.insert(instr_counter + 1, nope_camp.clone());
@@ -244,13 +245,12 @@ impl Resolveable for Star {
 
                         // ==== RETURN ====
                         PseudoInstruction::Ret => {
-                            instr_camp.instruction.token = Token::Instruction(Instruction::Jar);
-                            instr_camp.sequence = Sequence::Two(
+                            instr_camp.instruction.token = Token::Instruction(Instruction::J);
+                            instr_camp.sequence = Sequence::One(
                                 PositionedToken {
                                     token: Token::GeneralRegister(GeneralRegister::ReturnAddress),
                                     position: instr_camp.instruction.position.clone(),
                                 },
-                                zero_reg.clone(),
                             );
                         }
                         // >>>> 2 <<<<
@@ -728,15 +728,14 @@ impl Resolveable for Star {
                                     let new_camp_3 = InstrCamp {
                                         label_declarations: Vec::new(),
                                         instruction: PositionedToken { 
-                                            token: Token::Instruction(Instruction::Jar),
+                                            token: Token::Instruction(Instruction::J),
                                             position: instr_camp.instruction.position.clone(),
                                         },
-                                        sequence: Sequence::Two(
+                                        sequence: Sequence::One(
                                             aux1_reg.clone(),
-                                            zero_reg.clone(),
                                         ),
                                     };
-
+                                    
                                     ast.instr_field[instr_counter] = new_camp_1;
                                     ast.instr_field[instr_counter + 1] = new_camp_2;
                                     ast.instr_field[instr_counter + 2] = new_camp_3;
@@ -1287,8 +1286,7 @@ impl Resolveable for Star {
                                 unreachable!()
                             }
                         }
-                        // >>>> 7 <<<<
-                        // ==== BRANCH INSTRUCTIONS ====
+                        // ==== BRANCH INSTRUCTIONS (3 instructions)====
                         PseudoInstruction::Beqa
                         | PseudoInstruction::Bneqa
                         | PseudoInstruction::Blta
@@ -1308,7 +1306,10 @@ impl Resolveable for Star {
                                             unreachable!()
                                         }
                                     };
-                                    let (address_low, address_high) = split_u16_to_strings(address);
+                                    
+                                    let relative_target_address = address.wrapping_sub(instr_counter as u16).wrapping_sub(2);
+                                    
+                                    let (relative_target_address_low, relative_target_address_high) = split_u16_to_strings(relative_target_address);
 
                                     let new_camp_1 = InstrCamp {
                                         label_declarations: Vec::new(),
@@ -1319,7 +1320,7 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(address_low),
+                                                token: Token::NumberLiteral(relative_target_address_low),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
@@ -1334,41 +1335,13 @@ impl Resolveable for Star {
                                         sequence: Sequence::Two(
                                             aux1_reg.clone(),
                                             PositionedToken {
-                                                token: Token::NumberLiteral(address_high),
+                                                token: Token::NumberLiteral(relative_target_address_high),
                                                 position: arg3.position.clone(),
                                             }
                                         ),
                                     };
 
-                                    let new_camp_3 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lli),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux2_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral("0x02".to_string()),
-                                                position: arg3.position.clone(),
-                                            }
-                                        ),
-                                    };
-
-                                    let new_camp_4 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Lai),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
-                                            aux2_reg.clone(),
-                                            PositionedToken {
-                                                token: Token::NumberLiteral("0x00".to_string()),
-                                                position: arg3.position.clone(),
-                                            }
-                                        ),
-                                    };
+                                    
 
                                     let branch_instr = match instr_camp.instruction.token {
                                         Token::PseudoInstruction(PseudoInstruction::Beqa) => Instruction::Beqr,
@@ -1380,7 +1353,7 @@ impl Resolveable for Star {
                                         _ => unreachable!(),
                                     };
 
-                                    let new_camp_5 = InstrCamp {
+                                    let new_camp_3 = InstrCamp {
                                         label_declarations: Vec::new(),
                                         instruction: PositionedToken {
                                             token: Token::Instruction(branch_instr),
@@ -1389,42 +1362,14 @@ impl Resolveable for Star {
                                         sequence: Sequence::Three(
                                             arg1.clone(),
                                             arg2.clone(),
-                                            aux2_reg.clone(),
-                                        ),
-                                    };
-
-                                    let new_camp_6 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Beqr),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Three(
-                                            zero_reg.clone(),
-                                            zero_reg.clone(),
-                                            aux2_reg.clone(),
-                                        ),
-                                    };
-
-                                    let new_camp_7 = InstrCamp {
-                                        label_declarations: Vec::new(),
-                                        instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Jar),
-                                            position: instr_camp.instruction.position.clone(),
-                                        },
-                                        sequence: Sequence::Two(
                                             aux1_reg.clone(),
-                                            zero_reg.clone(),
                                         ),
                                     };
 
+                                    
                                     ast.instr_field[instr_counter] = new_camp_1;
                                     ast.instr_field[instr_counter + 1] = new_camp_2;
                                     ast.instr_field[instr_counter + 2] = new_camp_3;
-                                    ast.instr_field[instr_counter + 3] = new_camp_4;
-                                    ast.instr_field[instr_counter + 4] = new_camp_5;
-                                    ast.instr_field[instr_counter + 5] = new_camp_6;
-                                    ast.instr_field[instr_counter + 6] = new_camp_7;
                                 } else {
                                     unreachable!()
                                 }

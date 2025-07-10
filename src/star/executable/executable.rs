@@ -153,29 +153,6 @@ impl Executable for Star {
                                 self.increment_program_counter();
                             }
 
-                            //if condition {
-                            //    if reg3_v >= 0 {
-                            //        match self.registers.program_counter.checked_add(reg3_v as u16) {
-                            //            Some(new_pc) => {
-                            //                self.registers.program_counter = new_pc;
-                            //            }
-                            //            None => {
-                            //                debugger::exit_with_error("Program counter overflow");
-                            //            }
-                            //        }
-                            //    } else {
-                            //        match self.registers.program_counter.checked_sub((-reg3_v) as u16) {
-                            //            Some(new_pc) => {
-                            //                self.registers.program_counter = new_pc;
-                            //            }
-                            //            None => {
-                            //                self.registers.program_counter = 0;
-                            //            }
-                            //        }
-                            //    }
-                            //} else {
-                            //    self.increment_program_counter();
-                            //}
                         }
 
                         _ => unimplemented!(),
@@ -332,12 +309,16 @@ impl Executable for Star {
                             self.increment_program_counter();
                         }
 
-                        Instruction::Jar => { // jump absolute relative
-                            let reg1_v = self.registers.get(reg1);
-                            let reg2_v = self.registers.get(reg2);
+                        _ => unreachable!(),
+                    }
+                    
+                }
 
-                            let address = reg1_v.wrapping_add(reg2_v);
-                            
+                Format::Clover => {
+                    let (instruction, reg) = defold_clover(instruction_format);
+                    match instruction {
+                        Instruction::J => {
+                            let reg_v = self.registers.get(reg);
                             match self.registers.program_counter.checked_add(1) {
                                 Some(ra) => {
                                     self.registers.return_address = ra
@@ -347,17 +328,11 @@ impl Executable for Star {
                                     instruction_position_option,
                                 ),
                             }
+                            self.registers.program_counter = reg_v;
                             
-                            self.registers.program_counter = address;
                         }
-                        
                         _ => unreachable!(),
                     }
-                    
-                }
-
-                Format::Clover => {
-                    let (_instruction, _reg) = defold_clover(instruction_format);
                 }
 
                 Format::Ark => {

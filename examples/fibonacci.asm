@@ -1,3 +1,4 @@
+# program to print Fibonacci numbers with a maximum value
 .data
     max: .word 47000
     comma: .string ","

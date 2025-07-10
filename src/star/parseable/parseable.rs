@@ -160,6 +160,24 @@ impl Parseable for Star {
                                         }
 
                                         // ==== READ REG ====
+                                        Instruction::J => {
+                                            // e.g.: j $r
+                                            match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
+                                                Ok(sequence) => {
+                                                    ast.instr_field.push(
+                                                        InstrCamp {
+                                                            label_declarations: label_declaration_accumulator.clone(),
+                                                            instruction: ptk.clone(),
+                                                            sequence,
+                                                        }
+                                                    );
+                                                    ptk_counter += 2;
+                                                    label_declaration_accumulator.clear();
+                                                    continue;
+                                                }
+                                                Err((err_msg, err_pos)) => self.exit_with_positional_error(&err_msg, err_pos),
+                                            }
+                                        }
                                         /* DELETED:
                                             Instruction::Br => {
                                                 // e.g.: br $r
@@ -192,8 +210,6 @@ impl Parseable for Star {
                                         | Instruction::Muluhl
                                         | Instruction::Divuhl
                                         | Instruction::Not
-
-                                        | Instruction::Jar
                                         => {
                                             // e.g.: xb $r1, $r2
                                             match read_r_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {

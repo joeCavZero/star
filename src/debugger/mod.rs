@@ -1,3 +1,3 @@
-pub mod debug;
+pub mod debugger;
 
-pub use debug::*;
+pub use debugger::*;

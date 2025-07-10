@@ -47,7 +47,8 @@ impl Token {
             "muluhl" => Ok(Token::Instruction(Instruction::Muluhl)),
             "divuhl" => Ok(Token::Instruction(Instruction::Divuhl)),
             "not" => Ok(Token::Instruction(Instruction::Not)),
-            "jar" => Ok(Token::Instruction(Instruction::Jar)),
+
+            "j" => Ok(Token::Instruction(Instruction::J)),
 
             "mcall" => Ok(Token::Instruction(Instruction::Mcall)),
             
@@ -128,8 +129,8 @@ impl Token {
                     "$aux2" | "$9" => Ok(Token::GeneralRegister(GeneralRegister::Aux2)),
                     "$aux3" | "$10" => Ok(Token::GeneralRegister(GeneralRegister::Aux3)),
                     "$carry" | "$11" => Ok(Token::GeneralRegister(GeneralRegister::Carry)),
-                    "$high" | "$12" => Ok(Token::GeneralRegister(GeneralRegister::High)),
-                    "$low" | "$13" => Ok(Token::GeneralRegister(GeneralRegister::Low)),
+                    "$low" | "$12" => Ok(Token::GeneralRegister(GeneralRegister::Low)),
+                    "$high" | "$13" => Ok(Token::GeneralRegister(GeneralRegister::High)),
                     "$ra" | "$14" => Ok(Token::GeneralRegister(GeneralRegister::ReturnAddress)),
                     "$sp" | "$15" => Ok(Token::GeneralRegister(GeneralRegister::StackPointer)),
                     _ => Err("Invalid register".to_string()),
