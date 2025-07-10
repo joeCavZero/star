@@ -218,11 +218,11 @@ impl Resolveable for Star {
                         // ==== NEGATE ====
                         PseudoInstruction::Neg => {
                             instr_camp.instruction.token = Token::Instruction(Instruction::Sub);
-                            if let Sequence::Two(arg1, arg2) = instr_camp.sequence.clone() {
+                            if let Sequence::One(arg1) = instr_camp.sequence.clone() {
                                 instr_camp.sequence = Sequence::Three(
                                     arg1.clone(),
                                     zero_reg.clone(),
-                                    arg2.clone(),
+                                    arg1.clone(),
                                 )
                             } else {
                                 unreachable!()
