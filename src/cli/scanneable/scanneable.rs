@@ -97,7 +97,7 @@ impl Scanneable for Cli {
 
         // ==== CHECKING FOR INCONSISTENCIES ====
         
-        if !self.version || !self.help {
+        if !self.version && !self.help {
             // check if base file is specified
             if self.base_file.is_none() {
                 debugger::exit_with_error("No base file specified");
