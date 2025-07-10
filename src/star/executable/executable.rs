@@ -22,6 +22,27 @@ pub trait Executable {
     fn load_from_data_memory(&self, address: u16) -> Result<u8, String>;
 }
 
+/// Manipula operações de leitura de string da entrada padrão e armazena na memória de dados.
+///
+/// - Caso `self.registers.aux1 == 14`:
+///   - Lê uma linha da entrada padrão (stdin), remove espaços em branco das extremidades e armazena os caracteres na memória de dados a partir do endereço especificado em `self.registers.aux2`.
+///   - O número máximo de caracteres a serem armazenados é definido por `self.registers.aux3`.
+///   - Não adiciona terminador nulo (`\0`) ao final da string.
+///   - Se a string de entrada for maior que o limite, ela é truncada.
+///   - Se o endereço de memória exceder os limites, ocorre um erro.
+///   - Armazena o tamanho da string lida em `self.registers.aux2`
+///
+/// - Caso `self.registers.aux1 == 15`:
+///   - Lê uma linha da entrada padrão (stdin), remove espaços em branco das extremidades e armazena os caracteres na memória de dados a partir do endereço especificado em `self.registers.aux2`.
+///   - O número máximo de bytes a serem escritos é definido por `self.registers.aux3`.
+///   - Sempre adiciona um terminador nulo (`\0`) ao final da string armazenada, desde que o tamanho máximo (`aux3`) seja maior que zero.
+///   - Se a string de entrada for maior que o limite permitido (considerando o espaço para o terminador nulo), ela é truncada.
+///   - Se o endereço de memória exceder os limites, ocorre um erro.
+///
+/// Exemplos de comportamento para o caso 15:
+/// - Se `aux3 == 0`, nada é armazenado.
+/// - Se `aux3 == 6` e a entrada for "Hello", armazena "Hello\0".
+/// - Se `aux3 == 3` e a entrada for "Hello World", armazena "He\0".
 impl Executable for Star {
     fn execute(&mut self) {
         let instruction_memory_len = match u16::try_from( self.instruction_memory.len() ) {
@@ -551,6 +572,17 @@ impl Executable for Star {
                                         i += 1;
                                     }
 
+                                    // sets the aux2 register to the length of the string inserted
+                                    self.registers.aux2 = match u16::try_from(input.len()) {
+                                        Ok(len) => len,
+                                        Err(_) => {
+                                            self.exit_with_optional_positional_error(
+                                                "String length exceeds maximum size of 16 bits",
+                                                instruction_position_option,
+                                            );
+                                            unreachable!();
+                                        }
+                                    };
                                 }
                                 15 => { // read string zero with a maximum length, it always put a \0 at the end of the string inserted on memory
                                     /* Examples: 
