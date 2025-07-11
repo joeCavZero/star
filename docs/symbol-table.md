@@ -10,7 +10,7 @@ You can read more about how the symbol table is built in the [resolver stage doc
 
 ## Example of a Symbol Table
 
-```assembly
+```python
 .data
     label_1: .byte 2
     label_2: .word 4

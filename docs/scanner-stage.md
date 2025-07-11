@@ -19,7 +19,7 @@ A well-designed scanner improves the reliability and maintainability of the asse
 You can read more about how tokens are parsed in the [parser stage documentation](/docs/parser-stage.md).
 
 ## Example of Scanner Output
-```assembly
+```python
 .data
     string: .stringz "Hello World!"
 .instr

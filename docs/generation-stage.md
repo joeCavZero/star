@@ -9,11 +9,11 @@ The generation stage iterates through the AST and generates the corresponding na
 You can read more about instruction formats in the [formats documentation](/docs/formats.md) and about the instruction set in the [instructions documentation](/docs/instructions.md).
 
 ## Example of Generation Output
-```assembly
+```python
 .instr
     nope
 ```
 The generation stage would produce the following output:
-```assembly
+```python
 00000000 00000000
 ```

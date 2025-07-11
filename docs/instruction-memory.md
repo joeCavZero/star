@@ -20,7 +20,7 @@ You can read more about how the PC is used in the [execution stage documentation
 
 ## Example of Instruction Memory Usage
 
-```assembly
+```python
 .instr
     add $zero, $zero, $zero
 ```

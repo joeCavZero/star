@@ -12,7 +12,7 @@ You can read more about how data is defined in the [directives documentation](/d
 
 ## Example of Data Memory Usage
 
-```assembly
+```python
 .data
     .byte 2
     .word 4

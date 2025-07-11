@@ -11,7 +11,7 @@ The parser also performs semantic analysis, checking for errors such as undefine
 You can read more about how the AST is processed in the [resolver stage documentation](/docs/resolver-stage.md).
 
 ## Example of Parser Output
-```assembly
+```python
 .data
     string: .stringz "Hello World!"
 .instr

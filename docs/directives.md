@@ -9,42 +9,42 @@ You can read more about how directives are processed in the [parser stage](/docs
 ### `.byte`
 Defines a byte (8 bits) in the data section. It can be used to initialize memory with specific values.
 
-```assembly
+```python
 .byte 200, 0b0001100, 0x7F
 ```
 
 ### `.word`
 Defines a word (16 bits) in the data section. It can be used to initialize memory with specific values.
 
-```assembly
+```python
 .word 0x1234, 0b1010101010101010, 30000
 ```
 
 ### `.space`
 Allocates a specified number of bytes in the data section without initializing them.
 
-```assembly
+```python
 .space 10
 ```
 
 ### `.string`
 Defines a string in the data section. It does not automatically append a zero byte at the end, so it is not null-terminated.
 
-```assembly
+```python
 .string "Hello, World!"
 ```
 
 ### `.stringz`
 Defines a null-terminated string in the data section. It automatically appends a zero byte at the end of the string.
 
-```assembly
+```python
 .stringz "Hello, World!"
 ```
 
 ### `.data`
 Marks the start of a data section. All subsequent `.byte`, `.word`, `.space`, `.string`, and `.stringz` directives will be placed in this section.
 
-```assembly
+```python
 .data
     label_1: .byte 100
     label_2: .word 0b011
@@ -56,7 +56,7 @@ Marks the start of a data section. All subsequent `.byte`, `.word`, `.space`, `.
 ### `.instr`
 Marks the start of an instruction section. All subsequent instructions will be placed in this section.
 
-```assembly
+```python
 .instr
     addi $a, $b, 10
     sub $c, $d, $e

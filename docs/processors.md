@@ -12,7 +12,7 @@ You can read more about how processors are handled in the [scanner stage documen
 
 The include processor allows you to include the contents of another file into the current source code. This is useful for modularizing code and reusing common definitions.
 
-```assembly
+```python
 @include "file.asm"
 ```
 
@@ -20,7 +20,7 @@ The include processor allows you to include the contents of another file into th
 
 The define processor allows you to define a macro that can be used throughout the code. Macros are placeholders that can be replaced with specific values or code snippets during the assembly process.
 
-```assembly
+```python
 @define MY_MACRO 42
 .instr
     addi $a, $b, MY_MACRO # here MY_MACRO will be replaced with 42

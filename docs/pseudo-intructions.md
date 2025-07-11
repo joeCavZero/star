@@ -18,11 +18,11 @@ Some pseudo-instructions expand into multiple instructions. The assembler may in
 
 No operation (does nothing).
 
-```assembly
+```python
 nope
 ```
 **Resolves to:**
-```assembly
+```python
 add $zero, $zero, $zero
 ```
 
@@ -32,11 +32,11 @@ add $zero, $zero, $zero
 
 Copies the value from one register to another.
 
-```assembly
+```python
 move $rd, $rs
 ```
 **Resolves to:**
-```assembly
+```python
 add $rd, $zero, $rs
 ```
 
@@ -46,11 +46,11 @@ add $rd, $zero, $rs
 
 Negates a register (two's complement).
 
-```assembly
+```python
 neg $rd, $rs
 ```
 **Resolves to:**
-```assembly
+```python
 sub $rd, $zero, $rs
 ```
 
@@ -60,11 +60,11 @@ sub $rd, $zero, $rs
 
 Jumps to the address in a register.
 
-```assembly
+```python
 jr $rs
 ```
 **Resolves to:**
-```assembly
+```python
 beqr $zero, $zero, $rs
 ```
 
@@ -74,11 +74,11 @@ beqr $zero, $zero, $rs
 
 Returns from a subroutine (jumps to `$ra`).
 
-```assembly
+```python
 ret
 ```
 **Resolves to:**
-```assembly
+```python
 j $ra
 ```
 
@@ -88,11 +88,11 @@ j $ra
 
 Loads a 16-bit immediate value into a register.
 
-```assembly
+```python
 li $rd, imm
 ```
 **Resolves to:**
-```assembly
+```python
 lli $rd, imm<7...0>
 lai $rd, imm<15...8>
 ```
@@ -104,11 +104,11 @@ lai $rd, imm<15...8>
 
 Loads the address of a label into a register.
 
-```assembly
+```python
 la $rd, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $rd, label<7...0>
 lai $rd, label<15...8>
 ```
@@ -119,33 +119,33 @@ lai $rd, label<15...8>
 
 #### `mul`
 
-```assembly
+```python
 mul $rd, $rs, $rt
 ```
 **Resolves to:**
-```assembly
+```python
 mulhl $rs, $rt
 add $rd, $zero, $low
 ```
 
 #### `div`
 
-```assembly
+```python
 div $rd, $rs, $rt
 ```
 **Resolves to:**
-```assembly
+```python
 divhl $rs, $rt
 add $rd, $zero, $low
 ```
 
 #### `mod`
 
-```assembly
+```python
 mod $rd, $rs, $rt
 ```
 **Resolves to:**
-```assembly
+```python
 divhl $rs, $rt
 add $rd, $zero, $high
 ```
@@ -156,11 +156,11 @@ add $rd, $zero, $high
 
 Swaps the values of two registers.
 
-```assembly
+```python
 swap $r1, $r2
 ```
 **Resolves to:**
-```assembly
+```python
 add $aux1, $zero, $r1
 add $r1, $zero, $r2
 add $r2, $zero, $aux1
@@ -175,11 +175,11 @@ For each instruction below, replace `add` with the corresponding operation (`sub
 
 #### `addi`
 
-```assembly
+```python
 addi $rd, $rs, imm
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
 add $rd, $rs, $aux1
@@ -195,11 +195,11 @@ Follow the same expansion as `addi`, replacing `add` with the appropriate operat
 
 #### `inc`
 
-```assembly
+```python
 inc $r
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, 0x01
 lai $aux1, 0x00
 add $r, $r, $aux1
@@ -207,11 +207,11 @@ add $r, $r, $aux1
 
 #### `dec`
 
-```assembly
+```python
 dec $r
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, 0x01
 lai $aux1, 0x00
 sub $r, $r, $aux1
@@ -223,11 +223,11 @@ sub $r, $r, $aux1
 
 #### `muli`
 
-```assembly
+```python
 muli $rd, $rs, imm
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
 mulhl $rs, $aux1
@@ -236,11 +236,11 @@ add $rd, $zero, $low
 
 #### `divi`
 
-```assembly
+```python
 divi $rd, $rs, imm
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
 divhl $rs, $aux1
@@ -249,11 +249,11 @@ add $rd, $zero, $low
 
 #### `modi`
 
-```assembly
+```python
 modi $rd, $rs, imm
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
 divhl $rs, $aux1
@@ -270,11 +270,11 @@ Each branch pseudo-instruction expands similarly, but is listed separately for c
 
 Branch if equal.
 
-```assembly
+```python
 beqa $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 beqr $rs, $rt, $aux1
@@ -285,11 +285,11 @@ beqr $rs, $rt, $aux1
 
 Branch if not equal.
 
-```assembly
+```python
 bneqa $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bneqr $rs, $rt, $aux1
@@ -299,11 +299,11 @@ bneqr $rs, $rt, $aux1
 
 Branch if greater than (signed).
 
-```assembly
+```python
 bgta $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bgtqr $rs, $rt, $aux1
@@ -313,11 +313,11 @@ bgtqr $rs, $rt, $aux1
 
 Branch if less than (signed).
 
-```assembly
+```python
 blta $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bltqr $rs, $rt, $aux1
@@ -327,11 +327,11 @@ bltqr $rs, $rt, $aux1
 
 Branch if greater than (unsigned).
 
-```assembly
+```python
 bgtua $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bgtuqr $rs, $rt, $aux1
@@ -341,11 +341,11 @@ bgtuqr $rs, $rt, $aux1
 
 Branch if less than (unsigned).
 
-```assembly
+```python
 bltua $rs, $rt, label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bltuqr $rs, $rt, $aux1
@@ -357,11 +357,11 @@ bltuqr $rs, $rt, $aux1
 
 Unconditional jump to a label.
 
-```assembly
+```python
 ja label
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, label<7...0>
 lai $aux1, label<15...8>
 j $aux1
@@ -375,11 +375,11 @@ Memory access pseudo-instructions expand into several instructions to compute ad
 
 #### Example: `lw`
 
-```assembly
+```python
 lw $rd, label[offset]
 ```
 **Resolves to:**
-```assembly
+```python
 lli $aux1, label<7...0>
 lai $aux1, label<15...8>
 lli $aux2, offset<7...0>

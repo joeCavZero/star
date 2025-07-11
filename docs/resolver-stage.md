@@ -12,14 +12,14 @@ The resolver stage can be divided into three main processes:
 You can read more about pseudo-instructions and how they are resolved in the [pseudo-instructions documentation](/docs/pseudo-intructions.md).
 
 ## Example of a Resolver Output
-```assembly
+```python
 .data
     label_1: .byte 2
 .instr
     li $a, 10
 ```
 The resolver would produce the following output:
-```assembly
+```python
 .data
     label_1: .byte 2
 .instr
