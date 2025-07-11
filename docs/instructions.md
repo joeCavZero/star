@@ -1,4 +1,4 @@
-# Star VM Instructions
+# Star Instructions
 
 This table presents all native instructions of the **Star Virtual Machine**, including their formats, descriptions, and syntax. 
 
@@ -34,6 +34,42 @@ This table presents all native instructions of the **Star Virtual Machine**, inc
 | **mcall**      | Ark       | `mcall`                                  | Calls a machine routine (system call); operation is defined by `$aux1`.                       |
 
 The **Star** assembles these instructions into a binary format that can executed. Each instruction is encoded based on its format, which determines how operands are represented and how the instruction is interpreted.
+
+## Binary Formats
+
+Binary formats are the specific encoding of instructions in the **Star**. Each instruction is represented by a 16-bit binary code, which can be broken down into fields that represent the operation and its operands. The following table shows the binary structure of each instruction: 
+
+| Instruction    | 15...12 | 11...8 | 7...4 | 3...0 |
+|:-------------- |:-------:|:------:|:-----:|:-----:|
+| **add**        | zzzz    | yyyy   | xxxx  | 0000  |
+| **sub**        | zzzz    | yyyy   | xxxx  | 0001  |
+| **and**        | zzzz    | yyyy   | xxxx  | 0010  |
+| **or**         | zzzz    | yyyy   | xxxx  | 0011  |
+| **xor**        | zzzz    | yyyy   | xxxx  | 0100  |
+| **shl**        | zzzz    | yyyy   | xxxx  | 0101  |
+| **shr**        | zzzz    | yyyy   | xxxx  | 0110  |
+| **lai**        | iiii    | iiii   | xxxx  | 0111  |
+| **lli**        | iiii    | iiii   | xxxx  | 1000  |
+| **beqr**       | zzzz    | yyyy   | xxxx  | 1001  |
+| **bneqr**      | zzzz    | yyyy   | xxxx  | 1010  |
+| **bgtr**       | zzzz    | yyyy   | xxxx  | 1011  |
+| **bltr**       | zzzz    | yyyy   | xxxx  | 1100  |
+| **bgtur**      | zzzz    | yyyy   | xxxx  | 1101  |
+| **bltur**      | zzzz    | yyyy   | xxxx  | 1110  |
+| **mulhl**      | yyyy    | xxxx   | 0000  | 1111  |
+| **divhl**      | yyyy    | xxxx   | 0001  | 1111  |
+| **muluhl**     | yyyy    | xxxx   | 0010  | 1111  |
+| **divuhl**     | yyyy    | xxxx   | 0011  | 1111  |
+| **not**        | yyyy    | xxxx   | 0100  | 1111  |
+| **xb**         | yyyy    | xxxx   | 0101  | 1111  |
+| **lab**        | yyyy    | xxxx   | 0110  | 1111  |
+| **llb**        | yyyy    | xxxx   | 0111  | 1111  |
+| **sab**        | yyyy    | xxxx   | 1000  | 1111  |
+| **slb**        | yyyy    | xxxx   | 1001  | 1111  |
+| **j**          | xxxx    | 0000   | 1111  | 1111  |
+| **mcall**      | 1111    | 1111   | 1111  | 1111  |
+
+In this table `xxxx`, `yyyy`, and `zzzz` represent registers, while `iiii` represents immediate values. The last four bits (`0000`, `0001`, etc.) represent the specific operation code for each instruction.
 
 Formats categorize instructions by their structure and usage. See the [formats documentation](/docs/formats.md) for more details.
 

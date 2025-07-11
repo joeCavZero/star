@@ -6,7 +6,7 @@ Pseudo-instructions are higher-level assembly commands that make programming eas
 
 ## How Pseudo-Instructions Are Resolved
 
-During assembly, each pseudo-instruction is replaced by a sequence of native instructions that achieve the same effect. This is handled by a resolver stage. For example, the pseudo-instruction `nope` is replaced by `add $zero, $zero, $zero`, which does nothing.
+During the compilation, each pseudo-instruction is replaced by a sequence of native instructions that achieve the same effect. This is handled by a resolver stage. For example, the pseudo-instruction `nope` is replaced by `add $zero, $zero, $zero`, which does nothing.
 
 Some pseudo-instructions expand into multiple instructions. The assembler may insert `nope` instructions after them to ensure correct label addressing and instruction alignment.
 
