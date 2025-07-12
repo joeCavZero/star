@@ -6,7 +6,7 @@ Pseudo-instructions are higher-level assembly commands that make programming eas
 
 ## How Pseudo-Instructions Are Resolved
 
-During the compilation, each pseudo-instruction is replaced by a sequence of native instructions that achieve the same effect. This is handled by a resolver stage. For example, the pseudo-instruction `nope` is replaced by `add $zero, $zero, $zero`, which does nothing.
+During compilation, each pseudo-instruction is replaced by a sequence of native instructions that achieve the same effect. This is handled by a resolver stage. For example, the pseudo-instruction `nope` is replaced by `add $zero, $zero, $zero`, which performs no operation.
 
 Some pseudo-instructions expand into multiple instructions. The assembler may insert `nope` instructions after them to ensure correct label addressing and instruction alignment.
 
@@ -16,12 +16,12 @@ Some pseudo-instructions expand into multiple instructions. The assembler may in
 
 ### `nope`
 
-No operation (does nothing).
+Performs no operation.
 
 ```python
 nope
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 add $zero, $zero, $zero
 ```
@@ -35,7 +35,7 @@ Copies the value from one register to another.
 ```python
 move $rd, $rs
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 add $rd, $zero, $rs
 ```
@@ -44,12 +44,12 @@ add $rd, $zero, $rs
 
 ### `neg`
 
-Negates a register (two's complement).
+Negates the value in a register (two's complement).
 
 ```python
 neg $rd, $rs
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 sub $rd, $zero, $rs
 ```
@@ -58,12 +58,12 @@ sub $rd, $zero, $rs
 
 ### `jr`
 
-Jumps to the address in a register.
+Jumps to the address contained in a register.
 
 ```python
 jr $rs
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 beqr $zero, $zero, $rs
 ```
@@ -72,12 +72,12 @@ beqr $zero, $zero, $rs
 
 ### `ret`
 
-Returns from a subroutine (jumps to `$ra`).
+Returns from a subroutine by jumping to `$ra`.
 
 ```python
 ret
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 j $ra
 ```
@@ -91,7 +91,7 @@ Loads a 16-bit immediate value into a register.
 ```python
 li $rd, imm
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $rd, imm<7...0>
 lai $rd, imm<15...8>
@@ -107,7 +107,7 @@ Loads the address of a label into a register.
 ```python
 la $rd, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $rd, label<7...0>
 lai $rd, label<15...8>
@@ -115,36 +115,123 @@ lai $rd, label<15...8>
 
 ---
 
-### Arithmetic Pseudo-Instructions
+### `lb`
 
-#### `mul`
+Loads a byte from memory and sign-extends it to a word.
+
+```python
+lb $r1, label[offset]
+```
+**Expands to:**  
+Let `address` be *`label_address + offset`*:
+```python
+lli $aux1, address<7...0>
+lai $aux1, address<15...8>
+llb $r1, $aux1
+xb $r1, $r1
+```
+
+---
+
+### `sb`
+
+Stores the least significant byte of a register into memory at a computed address.
+
+```python
+sb $r1, label[offset]
+```
+**Expands to:**  
+Let `address` be *`label_address + offset`*:
+```python
+lli $aux1, address<7...0>
+lai $aux1, address<15...8>
+slb $r1, $aux1
+```
+
+---
+
+### `lw`
+
+Loads a 16-bit word from memory.
+
+```python
+lw $rd, label[offset]
+```
+**Expands to:**  
+Let `address` be *`label_address + offset`*:
+```python
+lli $aux1, address<7...0>
+lai $aux1, address<15...8>
+lab $rd, $aux1
+lli $aux2, 0x01
+lai $aux2, 0x00
+add $aux1, $aux1, $aux2
+llb $rd, $aux1
+```
+
+---
+
+### `sw`
+
+Stores a 16-bit word from a register into memory at a computed address, saving the alternate and low bytes separately.
+
+```python
+sw $r1, label[offset]
+```
+**Expands to:**  
+Let `address` be *`label_address + offset`*:
+```python
+lli $aux1, address<7...0>
+lai $aux1, address<15...8>
+sab $r1, $aux1       # save alt byte
+
+lli $aux2, 0x01
+lai $aux2, 0x00
+add $aux1, $aux1, $aux2
+
+slb $r1, $aux1       # save low byte
+```
+
+---
+
+### `mul`
+
+Multiplies two registers and stores the result in a register.
 
 ```python
 mul $rd, $rs, $rt
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 mulhl $rs, $rt
 add $rd, $zero, $low
 ```
 
-#### `div`
+---
+
+### `div`
+
+Divides one register by another and stores the quotient in a register.
 
 ```python
 div $rd, $rs, $rt
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 divhl $rs, $rt
 add $rd, $zero, $low
 ```
 
-#### `mod`
+---
+
+### `mod`
+
+Divides one register by another and stores the remainder in a register.
 
 ```python
 mod $rd, $rs, $rt
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 divhl $rs, $rt
 add $rd, $zero, $high
@@ -154,63 +241,156 @@ add $rd, $zero, $high
 
 ### `swap`
 
-Swaps the values of two registers.
+Swaps the values of two registers using a temporary register.
 
 ```python
 swap $r1, $r2
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 add $aux1, $zero, $r1
 add $r1, $zero, $r2
 add $r2, $zero, $aux1
 ```
-*Uses `$aux1` as a temporary register.*
 
 ---
 
-### Immediate Arithmetic Pseudo-Instructions
+### `addi`
 
-For each instruction below, replace `add` with the corresponding operation (`sub`, `and`, `or`, `xor`, `shl`, `shr`):
-
-#### `addi`
+Adds an immediate value to a register.
 
 ```python
 addi $rd, $rs, imm
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
 add $rd, $rs, $aux1
 ```
 
-#### `subi`, `andi`, `ori`, `xori`, `shli`, `shri`
+---
 
-Follow the same expansion as `addi`, replacing `add` with the appropriate operation.
+### `subi`
+
+Subtrai um valor imediato de um registrador.
+
+```python
+subi $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+sub $rd, $rs, $aux1
+```
 
 ---
 
-### Increment/Decrement
+### `andi`
 
-#### `inc`
+Realiza uma operação AND bit a bit entre um registrador e um valor imediato.
+
+```python
+andi $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+and $rd, $rs, $aux1
+```
+
+---
+
+### `ori`
+
+Realiza uma operação OR bit a bit entre um registrador e um valor imediato.
+
+```python
+ori $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+or $rd, $rs, $aux1
+```
+
+---
+
+### `xori`
+
+Realiza uma operação XOR bit a bit entre um registrador e um valor imediato.
+
+```python
+xori $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+xor $rd, $rs, $aux1
+```
+
+---
+
+### `shli`
+
+Desloca os bits de um registrador para a esquerda por um valor imediato.
+
+```python
+shli $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+shl $rd, $rs, $aux1
+```
+
+---
+
+### `shri`
+
+Desloca os bits de um registrador para a direita por um valor imediato.
+
+```python
+shri $rd, $rs, imm
+```
+**Expande para:**
+```python
+lli $aux1, imm<7...0>
+lai $aux1, imm<15...8>
+shr $rd, $rs, $aux1
+```
+
+---
+
+### `inc`
+
+Increments the value in a register by 1.
 
 ```python
 inc $r
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, 0x01
 lai $aux1, 0x00
 add $r, $r, $aux1
 ```
 
-#### `dec`
+---
+
+### `dec`
+
+Decrements the value in a register by 1.
 
 ```python
 dec $r
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, 0x01
 lai $aux1, 0x00
@@ -219,14 +399,14 @@ sub $r, $r, $aux1
 
 ---
 
-### Immediate Multiplication/Division/Modulo
+### `muli`
 
-#### `muli`
+Multiplies a register by an immediate value.
 
 ```python
 muli $rd, $rs, imm
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -234,12 +414,16 @@ mulhl $rs, $aux1
 add $rd, $zero, $low
 ```
 
-#### `divi`
+---
+
+### `divi`
+
+Divides a register by an immediate value and stores the quotient.
 
 ```python
 divi $rd, $rs, imm
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -247,12 +431,16 @@ divhl $rs, $aux1
 add $rd, $zero, $low
 ```
 
-#### `modi`
+---
+
+### `modi`
+
+Divides a register by an immediate value and stores the remainder.
 
 ```python
 modi $rd, $rs, imm
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -262,18 +450,14 @@ add $rd, $zero, $high
 
 ---
 
-### Conditional Branch Pseudo-Instructions
+### `beqa`
 
-Each branch pseudo-instruction expands similarly, but is listed separately for clarity.
-
-#### `beqa`
-
-Branch if equal.
+Branches if two registers are equal.
 
 ```python
 beqa $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
@@ -281,70 +465,80 @@ beqr $rs, $rt, $aux1
 ```
 *Offset is computed as the relative distance to the label.*
 
-#### `bneqa`
+---
 
-Branch if not equal.
+### `bneqa`
+
+Branches if two registers are not equal.
 
 ```python
 bneqa $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bneqr $rs, $rt, $aux1
 ```
 
-#### `bgta`
+---
 
-Branch if greater than (signed).
+### `bgta`
+
+Branches if one register is greater than another (signed).
 
 ```python
 bgta $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bgtqr $rs, $rt, $aux1
 ```
 
-#### `blta`
+---
 
-Branch if less than (signed).
+### `blta`
+
+Branches if one register is less than another (signed).
 
 ```python
 blta $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bltqr $rs, $rt, $aux1
 ```
 
-#### `bgtua`
+---
 
-Branch if greater than (unsigned).
+### `bgtua`
+
+Branches if one register is greater than another (unsigned).
 
 ```python
 bgtua $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 bgtuqr $rs, $rt, $aux1
 ```
 
-#### `bltua`
+---
 
-Branch if less than (unsigned).
+### `bltua`
+
+Branches if one register is less than another (unsigned).
 
 ```python
 bltua $rs, $rt, label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
@@ -355,43 +549,17 @@ bltuqr $rs, $rt, $aux1
 
 ### `ja`
 
-Unconditional jump to a label.
+Performs an unconditional jump to a label.
 
 ```python
 ja label
 ```
-**Resolves to:**
+**Expands to:**
 ```python
 lli $aux1, label<7...0>
 lai $aux1, label<15...8>
 j $aux1
 ```
-
----
-
-### Memory Access Pseudo-Instructions
-
-Memory access pseudo-instructions expand into several instructions to compute addresses and perform loads/stores.
-
-#### Example: `lw`
-
-```python
-lw $rd, label[offset]
-```
-**Resolves to:**
-```python
-lli $aux1, label<7...0>
-lai $aux1, label<15...8>
-lli $aux2, offset<7...0>
-lai $aux2, offset<15...8>
-add $aux1, $aux1, $aux2
-lab $rd, $aux1
-lli $aux2, 0x01
-lai $aux2, 0x00
-add $aux1, $aux1, $aux2
-llb $rd, $aux1
-```
-*This sequence loads a 16-bit word from memory.*
 
 ---
 

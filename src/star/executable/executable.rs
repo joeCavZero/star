@@ -76,8 +76,25 @@ impl Executable for Star {
                 },
             );
             
-            let instruction_format = unsafe { transmute::<(u8, u8), u16>((instr_low, instr_high)) };
+            let instruction_format: u16 = unsafe { transmute::<(u8, u8), u16>((instr_low, instr_high)) };
 
+            // ==== PERFORMANCE DETECTOR ====
+                /*
+                    This part of the code is used to detect non
+                    state alterable instructions, such as NOPs.
+                    If the instruction does not alter the state of
+                    the vm, it will not be decoded and executed.
+
+                    This is used to improve performance, as the
+                    instruction decoder is a costly operation.
+                 */
+            if instruction_format == 0b_0000_0000_0000_0000 {
+                // NOP instruction, just increment the program counter
+                self.increment_program_counter();
+                continue;
+            }
+
+            // ==== INSTRUCTION DECODER ====
             match Format::from_u16(instruction_format) {
                 Format::Trinity => {
                     let (instruction, reg1, reg2, reg3) = defold_trinity(instruction_format);
