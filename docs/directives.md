@@ -41,6 +41,13 @@ Defines a null-terminated string in the data section. It automatically appends a
 .stringz "Hello, World!"
 ```
 
+### `.checkpoint`
+Defines a checkpoint in the data section. It can be used to mark a specific point in the data section for debugging or reference purposes. It does not accept any arguments.
+
+```python
+.checkpoint
+```
+
 ### `.data`
 Marks the start of a data section. All subsequent `.byte`, `.word`, `.space`, `.string`, and `.stringz` directives will be placed in this section.
 
