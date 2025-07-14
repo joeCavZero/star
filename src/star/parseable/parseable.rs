@@ -522,10 +522,12 @@ impl Parseable for Star {
                                         }
                                     }
                                 }
-                                _ => self.exit_with_positional_error(
-                                    "Invalid expression in instruction field",
-                                    ptk.position,
-                                ),
+                                _ => {
+                                    self.exit_with_positional_error(
+                                        "Invalid expression in instruction field",
+                                        ptk.position,
+                                    );
+                                }
                             }
                         }
                         _ => unreachable!()

@@ -161,7 +161,7 @@ impl Scanneable for Star {
                         Some( define_identifier_ptkn ) => {
                             match define_identifier_ptkn.token {
                                 Token::Identifier(identifier_string) => {
-                                    let (macro_head, macro_definition_tkns_found) = match ptokens.scan_macro_definition_head(token_counter + 2, define_identifier_ptkn.position) {
+                                    let (macro_head, macro_definition_head_tkns_found) = match ptokens.scan_macro_definition_head(token_counter + 2, define_identifier_ptkn.position) {
                                         
                                         Ok((head, ptkns_found)) => (head, ptkns_found),
                                         Err((e, error_pos)) => {
@@ -169,15 +169,15 @@ impl Scanneable for Star {
                                             unreachable!();
                                         }
                                     };
-                                    match ptokens.scan_macro_sequence(token_counter + macro_definition_tkns_found + 2, define_identifier_ptkn.position.line) {
-                                        Ok((define_sequence, ptokens_quantity_found)) => {
+                                    match ptokens.scan_macro_sequence(token_counter + macro_definition_head_tkns_found + 2, define_identifier_ptkn.position.line) {
+                                        Ok((define_sequence, ptokens_sequence_quantity_found)) => {
                                             macro_table.insert(
                                                 identifier_string,
                                                 (macro_head, define_sequence.clone()),
                                             );
                                             // remove the define, identifier, head and sequence tokens
-                                            for _ in 0..(ptokens_quantity_found + macro_definition_tkns_found + 1 +  2) {
-                                                if !ptokens.is_empty() {
+                                            for _ in 0..(ptokens_sequence_quantity_found + macro_definition_head_tkns_found + 2) {
+                                                if ptokens.len() > token_counter {
                                                     ptokens.remove(token_counter);
                                                 }
                                             }
@@ -270,7 +270,7 @@ impl Scanneable for Star {
                         let tk_q_to_rem = 1 + head_tokens_quantity_found;
                         
                         for _ in 0..(tk_q_to_rem) {
-                            if !ptokens.is_empty() {
+                            if ptokens.len() > token_counter {
                                 ptokens.remove(token_counter);
                             }
                         }
@@ -279,6 +279,8 @@ impl Scanneable for Star {
                         for def_ptk in ptkns_to_substitute.iter().rev() {
                             ptokens.insert(token_counter, def_ptk.clone());
                         }
+                        ptokens_len = ptokens.len();
+                        continue;
                     } else {
                         token_counter += 1;
                         continue;
