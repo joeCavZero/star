@@ -177,7 +177,9 @@ impl Scanneable for Star {
                                             );
                                             // remove the define, identifier, head and sequence tokens
                                             for _ in 0..(ptokens_quantity_found + macro_definition_tkns_found + 1 +  2) {
-                                                ptokens.remove(token_counter);
+                                                if !ptokens.is_empty() {
+                                                    ptokens.remove(token_counter);
+                                                }
                                             }
                                             ptokens_len = ptokens.len();
                                             continue;
@@ -268,7 +270,9 @@ impl Scanneable for Star {
                         let tk_q_to_rem = 1 + head_tokens_quantity_found;
                         
                         for _ in 0..(tk_q_to_rem) {
-                            ptokens.remove(token_counter);
+                            if !ptokens.is_empty() {
+                                ptokens.remove(token_counter);
+                            }
                         }
 
                         // Insert the defined processor tokens at the current position
