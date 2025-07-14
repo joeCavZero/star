@@ -147,6 +147,7 @@ impl Token {
                     ".space" => Ok(Token::Directive(Directive::Space)),
                     ".string" => Ok(Token::Directive(Directive::String)),
                     ".stringz" => Ok(Token::Directive(Directive::Stringz)),
+                    ".checkpoint" => Ok(Token::Directive(Directive::Checkpoint)),
                     _ => Err("Invalid directive".to_string()),
                 }
             }

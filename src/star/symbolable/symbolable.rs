@@ -187,7 +187,13 @@ impl Symbolable for Star {
                         unreachable!();
                     }
                 }
-
+                Token::Directive(Directive::Checkpoint) => {
+                    if let DataCampArg::Empty = data_camp.arg {
+                        // Nothing to do here
+                    } else {
+                        unreachable!();
+                    }
+                }
                 _ => unreachable!(),
             }
         }

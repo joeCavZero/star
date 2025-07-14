@@ -125,6 +125,18 @@ impl Parseable for Star {
                                         ),
                                     };
                                 }
+                                Token::Directive(Directive::Checkpoint) => {
+                                    ast.data_field.push(
+                                        DataCamp {
+                                            label_declarations: label_declaration_accumulator.clone(),
+                                            directive: ptk.clone(),
+                                            arg: DataCampArg::Empty,
+                                        }
+                                    );
+                                    ptk_counter += 1;
+                                    label_declaration_accumulator.clear();
+                                    continue;
+                                }
                                 _ => self.exit_with_positional_error(
                                     "Invalid expression in data field",
                                     ptk.position,

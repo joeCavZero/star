@@ -105,47 +105,38 @@ impl Scanneable for Cli {
         
         let mut incompatible_args = false;
 
-        if self.version
-        && self.help {
+        if self.version && self.help {
             incompatible_args = true;
         }
 
         if (self.version || self.help)
-        && 
-        (
-            self.file.is_some()
+            && (self.file.is_some()
             || self.binary_destiny.is_some()
             || self.symbol_table
             || self.registers
-            || self.from_binary.is_some()
-        ) {
+            || self.from_binary.is_some())
+        {
             incompatible_args = true;
         }
 
-        if self.file.is_some() 
-        && self.from_binary.is_some() {
+        if self.file.is_some() && self.from_binary.is_some() {
             incompatible_args = true;
         }
 
-        if self.file.is_some() 
-        && self.binary_destiny.is_some() 
-        && self.from_binary.is_some() {
+        if self.file.is_some()
+            && self.binary_destiny.is_some()
+            && self.from_binary.is_some()
+        {
             incompatible_args = true;
         }
 
-        if self.from_binary.is_some() 
-        && (self.symbol_table || self.binary_destiny.is_some()) {
+        if self.from_binary.is_some()
+            && (self.symbol_table || self.binary_destiny.is_some())
+        {
             incompatible_args = true;
         }
 
-        if self.file.is_some() 
-        && self.from_binary.is_none() 
-        && self.registers {
-            incompatible_args = true;
-        }
-
-        if self.from_binary.is_some() 
-        && self.symbol_table {
+        if self.from_binary.is_some() && self.symbol_table {
             incompatible_args = true;
         }
 
@@ -161,6 +152,7 @@ impl Scanneable for Cli {
 
             debugger::message("Incorrect usage of options");
         }
+
             
         
     }

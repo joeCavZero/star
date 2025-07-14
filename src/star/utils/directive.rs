@@ -7,4 +7,5 @@ pub enum Directive {
     Space,
     String,
     Stringz,
+    Checkpoint,
 }

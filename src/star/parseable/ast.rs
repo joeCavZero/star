@@ -17,6 +17,7 @@ pub struct DataCamp {
 
 #[derive(Debug, Clone)]
 pub enum DataCampArg {
+    Empty,
     Unique(PositionedToken),
     Multiple(Vec<PositionedToken>),
 }

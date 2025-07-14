@@ -161,6 +161,16 @@ impl Generateable for Star {
                         unreachable!();
                     }
                 }
+                Token::Directive(Directive::Checkpoint) => {
+                    if let DataCampArg::Empty = data_camp.arg {
+                        // Nothing to do here, just a checkpoint
+                    } else {
+                        self.exit_with_positional_error(
+                            "Checkpoint directive does not accept arguments",
+                            data_camp.directive.position,
+                        );
+                    }
+                }
                 _ => unreachable!(),
             }
         }
