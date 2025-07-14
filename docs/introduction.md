@@ -108,7 +108,7 @@ star file.asm --symbol-table
 ```
 or
 ```bash
-star file.asm -s
+star file.asm -st
 ```
 
 ### Saving the Binary of A Program
@@ -121,6 +121,17 @@ star file.asm --binary output.txt
 or
 ```bash
 star file.asm -b output.txt
+```
+
+### Running a Program from Binary
+In **Star**, you can run a program from a binary file. This is useful when you want to execute a program that has already been compiled to binary format.
+To run a program from a binary file, use the following command:
+```bash
+star --from-binary binary_file.txt
+```
+or
+```bash
+star -fb binary_file.txt
 ```
 
 ## A Simple Program

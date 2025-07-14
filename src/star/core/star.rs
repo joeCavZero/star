@@ -31,7 +31,7 @@ impl Star {
         }
     }
 
-    pub fn process(&mut self, file_path: &String) -> (SymbolTable, usize) {
+    pub fn process_from_file(&mut self, file_path: &String) -> (SymbolTable, usize) {
         let ptokens = self.scan(file_path);
         let mut ast = self.parse(&ptokens);
         let symbol_table = self.resolve(&mut ast);

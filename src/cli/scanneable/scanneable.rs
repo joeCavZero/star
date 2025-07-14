@@ -21,7 +21,7 @@ impl Scanneable for Cli {
                 => {
                     match args.get(arg_counter + 1) {
                         Some(file) => {
-                            self.base_file = Some(file.clone());
+                            self.file = Some(file.clone());
                             arg_counter += 1;
                         }
                         None => {
@@ -52,7 +52,25 @@ impl Scanneable for Cli {
                         }
                     }
                 }
-                
+                "-fb"
+                | "--from-binary"
+                    => {
+                        if self.from_binary.is_some() {
+                            debugger::exit_with_error("Cannot specify more than one from binary option");
+                        }
+                        match args.get(arg_counter + 1) {
+                            Some(file) => {
+                                self.from_binary = Some(file.clone());
+                                arg_counter += 1;
+                            }
+                            None => {
+                                debugger::exit_with_error(
+                                    &format!("Expected a file path after '{}'", arg)
+                                );
+                                unreachable!();
+                            }
+                        }
+                    }
                 "-v"
                 | "--version"   
                     => self.version = true,
@@ -61,7 +79,7 @@ impl Scanneable for Cli {
                 | "--help" 
                     => self.help = true,
                 
-                "-s"
+                "-st"
                 | "--symbol-table" 
                     => self.symbol_table = true,
                 
@@ -76,42 +94,74 @@ impl Scanneable for Cli {
                     => debugger::exit_with_error(&format!("Unknown long option '{}'", arg)),
                 
                 _ => {
-                    if self.base_file.is_some() {
+                    if self.file.is_some() {
                         debugger::exit_with_error("Cannot specify more than one base file");
                     }
-                    self.base_file = Some(arg.clone());
+                    self.file = Some(arg.clone());
                 }
             }
             arg_counter += 1;
         }
+        
+        let mut incompatible_args = false;
+
+        if self.version
+        && self.help {
+            incompatible_args = true;
+        }
 
         if (self.version || self.help)
-        && (
-            self.base_file.is_some()
+        && 
+        (
+            self.file.is_some()
             || self.binary_destiny.is_some()
             || self.symbol_table
             || self.registers
+            || self.from_binary.is_some()
         ) {
-            debugger::exit_with_error("Cannot use version and help with other options");
+            incompatible_args = true;
         }
 
-        // ==== CHECKING FOR INCONSISTENCIES ====
+        if self.file.is_some() 
+        && self.from_binary.is_some() {
+            incompatible_args = true;
+        }
+
+        if self.file.is_some() 
+        && self.binary_destiny.is_some() 
+        && self.from_binary.is_some() {
+            incompatible_args = true;
+        }
+
+        if self.from_binary.is_some() 
+        && (self.symbol_table || self.binary_destiny.is_some()) {
+            incompatible_args = true;
+        }
+
+        if self.file.is_some() 
+        && self.from_binary.is_none() 
+        && self.registers {
+            incompatible_args = true;
+        }
+
+        if self.from_binary.is_some() 
+        && self.symbol_table {
+            incompatible_args = true;
+        }
+
+        if incompatible_args {
+            self.version = false;
+            self.file = None;
+            self.binary_destiny = None;
+            self.symbol_table = false;
+            self.registers = false;
+            self.from_binary = None;
+
+            self.help = true;
+
+            debugger::message("Incorrect usage of options");
+        }
+            
         
-        if !self.version && !self.help {
-            // check if base file is specified
-            if self.base_file.is_none() {
-                debugger::exit_with_error("No base file specified");
-            }
-
-            // check if binary destination is specified with symbol table or registers mode
-            if 
-            self.binary_destiny.is_some() 
-            && (
-                self.symbol_table 
-                || self.registers
-            ) {
-                debugger::exit_with_error("Cannot use binary destination with symbol table or registers");
-            }
-        }
     }
 }

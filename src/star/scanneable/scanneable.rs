@@ -57,7 +57,7 @@ impl Scanneable for Star {
                     "The file {} does not exist or could not be read",
                     file_path_to_include
                 ));
-                file_path_to_include.clone()
+                unreachable!();
             }
         };
         
@@ -235,7 +235,6 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
         Ok(content) => {
             let mut tokens: Vec<PositionedToken> = Vec::new();
             let mut token_accumulator = String::new();
-            let mut chars = content.chars().peekable();
 
             let mut actual_line = 1;
             let mut actual_column = 1;
@@ -246,6 +245,7 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
             let mut is_commentary = false;
             let mut line_has_identation = false;
 
+            let mut chars = content.chars().peekable();
             while let Some(ch) = chars.next() {
                 if token_accumulator.is_empty() {
                     initial_token_column = actual_column;
