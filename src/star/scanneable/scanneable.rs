@@ -6,6 +6,8 @@ use crate::star::utils::*;
 use crate::star::debuggable::*;
 use crate::star::scanneable::positioned_tokens_vectorable::*;
 
+type MacroTable = HashMap<String, (Vec<PositionedToken>, Vec<PositionedToken>)>;
+
 pub trait Scanneable {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken>;
 
@@ -15,7 +17,7 @@ pub trait Scanneable {
         file_path_to_include: &String,
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
-        define_processor_table: &mut HashMap<String, Vec<PositionedToken>>,
+        macro_table: &mut MacroTable,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken>;
 }
@@ -23,7 +25,7 @@ pub trait Scanneable {
 impl Scanneable for Star {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken> {
         let mut file_dependency_table: HashMap<u32, HashSet<u32>> = HashMap::new();
-        let mut define_processor_table: HashMap<String, Vec<PositionedToken>> = HashMap::new();
+        let mut macro_table: MacroTable = HashMap::new();
         let mut file_counter: u32 = 0;
         let mut processing_stack: HashSet<u32> = HashSet::new();
 
@@ -32,10 +34,9 @@ impl Scanneable for Star {
             base_file_path,
             &mut file_counter,
             &mut file_dependency_table,
-            &mut define_processor_table,
+            &mut macro_table,
             &mut processing_stack,
         );
-
         ptkns
     }
 
@@ -45,7 +46,7 @@ impl Scanneable for Star {
         file_path_to_include: &String,
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
-        define_processor_table: &mut HashMap<String, Vec<PositionedToken>>,
+        macro_table: &mut MacroTable,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken> {
         // ==== GETTING THE ABSOLUTE FILE PATH STRING ====
@@ -120,7 +121,7 @@ impl Scanneable for Star {
                                     &include_path_literal_string,
                                     file_counter,
                                     file_dependency_table,
-                                    define_processor_table,
+                                    macro_table,
                                     processing_stack,
                                 );
                                 match file_dependency_table.get_mut(&file_id) {
@@ -160,16 +161,25 @@ impl Scanneable for Star {
                         Some( define_identifier_ptkn ) => {
                             match define_identifier_ptkn.token {
                                 Token::Identifier(identifier_string) => {
-                                    match read_define_sequence(&ptokens, token_counter + 2, define_identifier_ptkn.position.line) {
+                                    let (macro_head, macro_definition_tkns_found) = match ptokens.scan_macro_definition_head(token_counter + 2, define_identifier_ptkn.position) {
+                                        
+                                        Ok((head, ptkns_found)) => (head, ptkns_found),
+                                        Err((e, error_pos)) => {
+                                            self.exit_with_positional_error(&e, error_pos);
+                                            unreachable!();
+                                        }
+                                    };
+                                    match ptokens.scan_macro_sequence(token_counter + macro_definition_tkns_found + 2, define_identifier_ptkn.position.line) {
                                         Ok((define_sequence, ptokens_quantity_found)) => {
-                                            
-                                            define_processor_table.insert(
+                                            macro_table.insert(
                                                 identifier_string,
-                                                define_sequence.clone(),
+                                                (macro_head, define_sequence.clone()),
                                             );
-                                            for _ in 0..(ptokens_quantity_found+2) {
+                                            // remove the define, identifier, head and sequence tokens
+                                            for _ in 0..(ptokens_quantity_found + macro_definition_tkns_found + 1 +  2) {
                                                 ptokens.remove(token_counter);
                                             }
+                                            ptokens_len = ptokens.len();
                                             continue;
                                         }
                                         Err((err, err_pos)) => {
@@ -196,14 +206,75 @@ impl Scanneable for Star {
                 }
                 Token::Identifier(identifier_string) => {
                     // Check if the identifier is a defined processor
-                    if let Some(define_sequence) = define_processor_table.get(&identifier_string) {
-                        ptokens.remove(token_counter);
+                    if let Some((macro_head, define_sequence)) = macro_table.get(&identifier_string) {
+                        let (macro_call_head, head_tokens_quantity_found) = match ptokens.scan_macro_calling_head(token_counter+1, tk.position) {
+                            Ok((head, ptkns_to_skip)) => (head, ptkns_to_skip),
+                            Err((e, error_pos)) => {
+                                self.exit_with_positional_error(&e, error_pos);
+                                unreachable!();
+                            }
+                        };
 
-                        for def_ptk in define_sequence.iter().rev() {
-                            // Insert the defined processor tokens at the current position
+                        if macro_call_head.len() != macro_head.len() {
+                            self.exit_with_positional_error(
+                                "Macro called with incorrect number of arguments",
+                                tk.position,
+                            );
+                        }
+
+                        let mut ptkns_to_substitute = define_sequence.clone();
+
+                        for (i, macro_call_arg) in macro_call_head.iter().enumerate() {
+                            let definition_arg_string = match macro_head.get(i) {
+                                Some(arg) => {
+                                    if let Token::MacroArgIdentifier(arg_name) = arg.token.clone() {
+                                        arg_name
+                                    } else {
+                                        self.exit_with_positional_error(
+                                            "Expected macro argument",
+                                            arg.position,
+                                        );
+                                        unreachable!();
+                                    }
+                                }
+                                None => {
+                                    self.exit_with_positional_error(
+                                        &format!("Macro '{}' called with too many arguments", identifier_string),
+                                        tk.position,
+                                    );
+                                    unreachable!();
+                                }
+                            };
+
+                            for df_sq_ptkn in ptkns_to_substitute.iter_mut() {
+                                if let Token::MacroArgIdentifier(df_sq_macro_arg_name) = df_sq_ptkn.token.clone() {
+                                    if df_sq_macro_arg_name == definition_arg_string {
+                                        *df_sq_ptkn = macro_call_arg.clone();
+                                    }
+                                }
+                            }
+                        }
+
+                        // check if there are not substituted macro arguments
+                        for df_sq_ptkn in ptkns_to_substitute.iter() {
+                            if let Token::MacroArgIdentifier(df_sq_macro_arg_name) = df_sq_ptkn.token.clone() {
+                                self.exit_with_positional_error(
+                                    &format!("Macro argument '{}' not associated with any argument in the macro definition head", df_sq_macro_arg_name), 
+                                    df_sq_ptkn.position,
+                                );
+                            }
+                        }
+                        // remove the identifier token and the head
+                        let tk_q_to_rem = 1 + head_tokens_quantity_found;
+                        
+                        for _ in 0..(tk_q_to_rem) {
+                            ptokens.remove(token_counter);
+                        }
+
+                        // Insert the defined processor tokens at the current position
+                        for def_ptk in ptkns_to_substitute.iter().rev() {
                             ptokens.insert(token_counter, def_ptk.clone());
                         }
-                        ptokens_len = ptokens.len();
                     } else {
                         token_counter += 1;
                         continue;
@@ -378,7 +449,7 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
                         actual_column += 1;
                         continue;
                     }
-                    ',' | '[' | ']' | '\\' => {
+                    ',' | '[' | ']' | '(' | ')' | '\\' => {
                         if is_commentary || is_string_literal_mode {
                             if is_string_literal_mode {
                                 token_accumulator.push(ch);
@@ -400,6 +471,7 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
                             }
                             token_accumulator.clear();
                         }
+                        initial_token_column = actual_column;
                         match tokens.push_positioned_token(
                             ch.to_string(),
                             file_id,
@@ -472,46 +544,4 @@ fn scan_positioned_tokens_from_file(file_path: &String, file_id: u32) -> Result<
         }
         Err(err) => return Err((err, None)),
     }
-}
-
-fn read_define_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, identifier_line: u32) -> Result<(Vec<PositionedToken>, usize), (String, Position)> {
-    // This function reads a sequence of tokens that defines a define processor
-    // Backslash ables to continue reading the sequence in the next line
-    let mut sequence: Vec<PositionedToken> = Vec::new();
-    let mut ptokens_read: usize = 0;
-    let mut line_to_read: u32 = identifier_line;
-    let mut index = start_index;
-    
-    while index < ptokens.len() {
-        let ptk = match ptokens.get(index) {
-            Some(ptk) => ptk,
-            None => break,
-        };
-
-        if ptk.position.line > line_to_read {
-            break;
-        } else if ptk.position.line < line_to_read {
-            return Err( ("Unexpected line change in define sequence".to_string(), ptk.position) );
-        }
-
-        match ptk.token.clone() {
-            Token::Backslash => {
-                // If the token is a backslash, we continue reading in the next line
-                line_to_read += 1;
-                ptokens_read += 1;
-                index += 1;
-                continue;
-            }
-            _ => {
-                sequence.push(ptk.clone());
-                ptokens_read += 1;
-                index += 1;
-                continue;
-            }
-        }
-    
-    }
-
-    Ok((sequence, ptokens_read))
-
 }

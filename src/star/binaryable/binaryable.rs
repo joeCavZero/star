@@ -91,7 +91,6 @@ impl Binaryable for Star {
                                         self.instruction_memory.push(v);
                                     }
                                     Err(_) => {
-                                        println!("---> {}", aux);
                                         self.exit_with_positional_error(
                                             "Invalid binary instruction",
                                             Position::new(

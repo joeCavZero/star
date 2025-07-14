@@ -8,12 +8,15 @@ pub enum Token {
     PseudoInstruction(PseudoInstruction),
     LabelDeclaration(String),
     Identifier(String),
+    MacroArgIdentifier(String),
     Directive(Directive),
     NumberLiteral(String),
     StringLiteral(String),
     Comma,
     LeftSquareBracket,
     RightSquareBracket,
+    LeftParenthesis,
+    RightParenthesis,
     Backslash,
 }
 
@@ -103,6 +106,8 @@ impl Token {
             "," => Ok(Token::Comma),
             "[" => Ok(Token::LeftSquareBracket),
             "]" => Ok(Token::RightSquareBracket),
+            "(" => Ok(Token::LeftParenthesis),
+            ")" => Ok(Token::RightParenthesis),
             "\\" => Ok(Token::Backslash),
 
             // ==== PROCESSORS ====
@@ -150,6 +155,12 @@ impl Token {
                     ".checkpoint" => Ok(Token::Directive(Directive::Checkpoint)),
                     _ => Err("Invalid directive".to_string()),
                 }
+            }
+
+            // ==== MACRO ARGUMENT ====
+            _ if tkn_string.starts_with("%") => {
+                let arg_name = tkn_string.trim_start_matches('%').to_string();
+                Ok(Token::MacroArgIdentifier(arg_name))
             }
 
             // ==== LABEL DECLARATIONS ====
