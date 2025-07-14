@@ -41,7 +41,8 @@ impl GeneralRegister {
     } 
 
     pub fn from_code(code: u16) -> Self {
-        match code {
+        let c = code & 0b0000_0000_0000_1111; // Ensure only the last 4 bits are considered
+        match c {
             0b0000_0000_0000_0000 => GeneralRegister::Zero,
             0b0000_0000_0000_0001 => GeneralRegister::A,
             0b0000_0000_0000_0010 => GeneralRegister::B,
@@ -58,8 +59,7 @@ impl GeneralRegister {
             0b0000_0000_0000_1101 => GeneralRegister::High,
             0b0000_0000_0000_1110 => GeneralRegister::ReturnAddress,
             0b0000_0000_0000_1111 => GeneralRegister::StackPointer,
-            _ => unreachable!(),
-            
+            _ => GeneralRegister::Zero,
         }
     }
 }
