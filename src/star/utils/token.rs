@@ -115,6 +115,7 @@ impl Token {
                 match tkn_string.as_str() {
                     "@include" => Ok(Token::Processor(Processor::Include)),
                     "@define" => Ok(Token::Processor(Processor::Define)),
+                    "@once" => Ok(Token::Processor(Processor::Once)),
                     _ => Err("Invalid processor".to_string()),
                 }
             }

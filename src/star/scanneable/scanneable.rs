@@ -18,6 +18,7 @@ pub trait Scanneable {
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
         macro_table: &mut MacroTable,
+        once_set: &mut HashSet<String>,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken>;
 }
@@ -26,6 +27,7 @@ impl Scanneable for Star {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken> {
         let mut file_dependency_table: HashMap<u32, HashSet<u32>> = HashMap::new();
         let mut macro_table: MacroTable = HashMap::new();
+        let mut once_set: HashSet<String> = HashSet::new();
         let mut file_counter: u32 = 0;
         let mut processing_stack: HashSet<u32> = HashSet::new();
 
@@ -35,6 +37,7 @@ impl Scanneable for Star {
             &mut file_counter,
             &mut file_dependency_table,
             &mut macro_table,
+            &mut once_set,
             &mut processing_stack,
         );
         ptkns
@@ -47,6 +50,7 @@ impl Scanneable for Star {
         file_counter: &mut u32,
         file_dependency_table: &mut HashMap<u32, HashSet<u32>>,
         macro_table: &mut MacroTable,
+        once_set: &mut HashSet<String>,
         processing_stack: &mut HashSet<u32>,
     ) -> Vec<PositionedToken> {
         // ==== GETTING THE ABSOLUTE FILE PATH STRING ====
@@ -122,6 +126,7 @@ impl Scanneable for Star {
                                     file_counter,
                                     file_dependency_table,
                                     macro_table,
+                                    once_set,
                                     processing_stack,
                                 );
                                 match file_dependency_table.get_mut(&file_id) {
@@ -196,13 +201,26 @@ impl Scanneable for Star {
                                     );
                                 }
                             }
-                            
                         }
-                        None => {
+                        None => 
                             self.exit_with_positional_error(
                                 "Define directive must be followed by an identifier",
                                 tk.position,
-                            );
+                            ),
+                    }
+                }
+                Token::Processor(Processor::Once) => {
+                    match once_set.get(&absolute_file_path) {
+                        Some(_) => {
+                            // remove all forward
+                            while token_counter < ptokens.len() {
+                                ptokens.remove(token_counter);
+                            }
+                        }
+                        None => {
+                            once_set.insert(absolute_file_path.clone());
+                            ptokens.remove(token_counter);
+                            ptokens_len = ptokens.len();
                         }
                     }
                 }

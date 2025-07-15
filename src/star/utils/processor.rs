@@ -2,4 +2,5 @@
 pub enum Processor {
     Include,
     Define,
+    Once,
 }
