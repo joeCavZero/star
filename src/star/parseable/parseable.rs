@@ -477,8 +477,8 @@ impl Parseable for Star {
                                         | PseudoInstruction::Sb
                                         | PseudoInstruction::Sw
                                         => {
-                                            // e.g.: lb $rd, label[imm]
-                                            match read_r_id_br_n_br(&ptokens, ptk_counter + 1, ptk.position) {
+                                            // e.g.: lb $rd, $rs[imm]
+                                            match read_r_r_br_n_br(&ptokens, ptk_counter + 1, ptk.position) {
                                                 Ok(sequence) => {
                                                     ast.instr_field.push(
                                                         InstrCamp {

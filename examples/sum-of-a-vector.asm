@@ -6,7 +6,8 @@
     string_result: .stringz "The sum of the vector is "
 .instr
     la $a, vector
-    lw $b, vector_size[0]
+    la $b, vector_size
+    lw $b, $b[0]
     li $g, 0
 loop:
     # check if $b <= 0, if so, print and end

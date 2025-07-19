@@ -142,7 +142,7 @@ pub fn read_r_id_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, ba
     }
 }
 
-pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
+pub fn read_r_r_br_n_br(ptokens: &Vec<PositionedToken>, start_index: usize, base_position: Position) -> Result<Sequence, (String, Position)> {
     // read reg reg square_bracket number square_bracket
     // e.g.: lw $r1, $r2[10]
     match ptokens.get(start_index) {
@@ -171,10 +171,10 @@ pub fn read_r_r_br_n_br_sequence(ptokens: &Vec<PositionedToken>, start_index: us
                                                                     None => Err(("Expected a right square bracket after number in this sequence".to_string(), tk3.position)),
                                                                 }
                                                             } else {
-                                                                Err(("Expected a right square bracket after number in this sequence".to_string(), tk3.position))
+                                                                Err(("Expected a number after left square bracket in this sequence".to_string(), tk3.position))
                                                             }
                                                         }
-                                                        None => Err(("Expected a number inside brackets in this sequence".to_string(), left_square_bracket.position)),
+                                                        None => Err(("Expected a number after left square bracket in this sequence".to_string(), left_square_bracket.position)),
                                                     }
                                                 } else {
                                                     Err(("Expected a left square bracket after second register in this sequence".to_string(), left_square_bracket.position))

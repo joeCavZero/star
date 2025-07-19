@@ -120,15 +120,15 @@ lai $rd, label<15...8>
 Loads a byte from memory and sign-extends it to a word.
 
 ```python
-lb $r1, label[offset]
+lb $rd, $rs[offset]
 ```
-**Expands to:**  
-Let `address` be *`label_address + offset`*:
+**Expands to:**
 ```python
-lli $aux1, address<7...0>
-lai $aux1, address<15...8>
-llb $r1, $aux1
-xb $r1, $r1
+lli $aux1, offset<7...0>
+lai $aux1, offset<15...8>
+add $aux1, $aux1, $rs
+llb $rd, $aux1
+xb $rd, $rd
 ```
 
 ---
@@ -138,30 +138,31 @@ xb $r1, $r1
 Stores the least significant byte of a register into memory at a computed address.
 
 ```python
-sb $r1, label[offset]
+sb $rd, $rs[offset]
 ```
 **Expands to:**  
 Let `address` be *`label_address + offset`*:
 ```python
-lli $aux1, address<7...0>
-lai $aux1, address<15...8>
-slb $r1, $aux1
+lli $aux1, offset<7...0>
+lai $aux1, offset<15...8>
+add $aux1, $aux1, $rs
+slb $rd, $aux1
 ```
 
 ---
 
 ### `lw`
 
-Loads a 16-bit word from memory.
+Loads a 16-bit word from memory with a offset.
 
 ```python
-lw $rd, label[offset]
+lw $rd, $rs[offset]
 ```
 **Expands to:**  
-Let `address` be *`label_address + offset`*:
 ```python
-lli $aux1, address<7...0>
-lai $aux1, address<15...8>
+lli $aux1, offset<7...0>
+lai $aux1, offset<15...8>
+add $aux1, $aux1, $rs
 lab $rd, $aux1
 lli $aux2, 0x01
 lai $aux2, 0x00
@@ -176,20 +177,18 @@ llb $rd, $aux1
 Stores a 16-bit word from a register into memory at a computed address, saving the alternate and low bytes separately.
 
 ```python
-sw $r1, label[offset]
+sw $rd, $rs[offset]
 ```
 **Expands to:**  
-Let `address` be *`label_address + offset`*:
 ```python
-lli $aux1, address<7...0>
-lai $aux1, address<15...8>
-sab $r1, $aux1       # save alt byte
-
+lli $aux1, offset<7...0>
+lai $aux1, offset<15...8>
+add $aux1, $aux1, $rs
+sab $rd, $aux1
 lli $aux2, 0x01
 lai $aux2, 0x00
 add $aux1, $aux1, $aux2
-
-slb $r1, $aux1       # save low byte
+slb $rd, $aux1
 ```
 
 ---

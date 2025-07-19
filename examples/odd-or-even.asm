@@ -4,7 +4,8 @@
     string_odd: .stringz "The number is odd.\n"
     string_even: .stringz "The number is even.\n"
 .instr
-    lw $a, number[0]
+    la $a, number 
+    lw $a, $a[0]
     andi $g, $a, 1
     beqa $g, $zero, even  # if $g == 0, jump to even
     ja odd

@@ -5,7 +5,8 @@
 .instr
     li $a, 1
     li $b, 1
-    lw $d, max[0]
+    la $d, max
+    lw $d, $d[0]
 
     # prints the first number
     li $aux1, 3                 # mcall for print unsigned word
@@ -37,7 +38,8 @@ loop:
 
     ja loop                     # jump address to loop
 print_comma:
-    lb $aux2, comma[0]          # load comma into $aux2
+    la $aux2, comma             # load comma into $aux2
+    lb $aux2, $aux2[0]          # load comma content into $aux2
     li $aux1, 7                 # mcall for print char
     mcall                       # do the machine call
     ret                         # return from the function

@@ -29,7 +29,8 @@ loop:
     bgtua $b, $a, end   # if $b > $a then end
 
     # print comma
-    lb $g, comma[0]
+    la $g, comma
+    lb $g, $g[0]
     li $aux1, 7
     move $aux2, $g
     mcall
