@@ -25,7 +25,7 @@ This table presents all native instructions of the **Star Virtual Machine**, inc
 | **muluhl**     | Pair      | `muluhl $r1, $r2`                        | Multiplies `$r1` and `$r2` (unsigned); result is split between `$low` and `$high`.            |
 | **divuhl**     | Pair      | `divuhl $r1, $r2`                        | Divides `$r1` by `$r2` (unsigned); quotient in `$low`, remainder in `$high`.                  |
 | **not**        | Pair      | `not $rd, $rs`                           | Performs bitwise NOT on `$rs`, storing the result in `$rd`.                                   |
-| **xb**         | Pair      | `xb $rd, $rs`                            | Sign-extends the lower byte of `$rs` to 16 bits and stores the result in `$rd`.               |
+| **xlb**         | Pair      | `xlb $rd, $rs`                            | Sign-extends the lower byte of `$rs` to 16 bits and stores the result in `$rd`.               |
 | **lab**        | Pair      | `lab $rd, $rs`                           | Loads the high byte from memory at the address in `$rs` into `$rd`.                           |
 | **llb**        | Pair      | `llb $rd, $rs`                           | Loads the low byte from memory at the address in `$rs` into `$rd`.                            |
 | **sab**        | Pair      | `sab $rs, $rd`                           | Stores the high byte of `$rs` into memory at the address in `$rd`.                            |
@@ -61,7 +61,7 @@ Binary formats are the specific encoding of instructions in the **Star**. Each i
 | **muluhl**     | yyyy    | xxxx   | 0010  | 1111  |
 | **divuhl**     | yyyy    | xxxx   | 0011  | 1111  |
 | **not**        | yyyy    | xxxx   | 0100  | 1111  |
-| **xb**         | yyyy    | xxxx   | 0101  | 1111  |
+| **xlb**        | yyyy    | xxxx   | 0101  | 1111  |
 | **lab**        | yyyy    | xxxx   | 0110  | 1111  |
 | **llb**        | yyyy    | xxxx   | 0111  | 1111  |
 | **sab**        | yyyy    | xxxx   | 1000  | 1111  |

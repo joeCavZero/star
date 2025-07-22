@@ -128,7 +128,7 @@ lli $aux1, offset<7...0>
 lai $aux1, offset<15...8>
 add $aux1, $aux1, $rs
 llb $rd, $aux1
-xb $rd, $rd
+xlb $rd, $rd
 ```
 
 ---

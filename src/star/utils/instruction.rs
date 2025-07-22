@@ -33,7 +33,7 @@ pub enum Instruction {
 
     Not, // not -- not $rd, $rs
 
-    Xb, // extend byte -- xb $r1, $r2
+    Xlb, // extend low byte -- xlb $r1, $r2
 
     Lab, // load alt byte -- lab $r, $raddress
     Llb, // load low byte -- llb $r, $raddress
@@ -80,7 +80,7 @@ impl Instruction {
             | Instruction::Muluhl
             | Instruction::Divuhl
             | Instruction::Not
-            | Instruction::Xb
+            | Instruction::Xlb
             | Instruction::Lab
             | Instruction::Llb
             | Instruction::Sab
@@ -124,7 +124,7 @@ impl Instruction {
 
             Instruction::Not => 0b0000_0000_0100_1111,
 
-            Instruction::Xb => 0b0000_0000_0101_1111,
+            Instruction::Xlb => 0b0000_0000_0101_1111,
             Instruction::Lab => 0b0000_0000_0110_1111,
             Instruction::Llb => 0b0000_0000_0111_1111,
             Instruction::Sab => 0b0000_0000_1000_1111,
@@ -167,7 +167,7 @@ impl Instruction {
 
             0b_0000_0000_0100_1111 => Some(Instruction::Not),
 
-            0b_0000_0000_0101_1111 => Some(Instruction::Xb),
+            0b_0000_0000_0101_1111 => Some(Instruction::Xlb),
             0b_0000_0000_0110_1111 => Some(Instruction::Lab),
             0b_0000_0000_0111_1111 => Some(Instruction::Llb),
             0b_0000_0000_1000_1111 => Some(Instruction::Sab),

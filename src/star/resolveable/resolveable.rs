@@ -1149,12 +1149,12 @@ impl Resolveable for Star {
                                         ),
                                     };
 
-                                    // xb $rd, $rd
+                                    // xlb $rd, $rd
 
                                     let new_camp_5 = InstrCamp {
                                         label_declarations: Vec::new(),
                                         instruction: PositionedToken {
-                                            token: Token::Instruction(Instruction::Xb),
+                                            token: Token::Instruction(Instruction::Xlb),
                                             position: instr_camp.instruction.position.clone(),
                                         },
                                         sequence: Sequence::Two(

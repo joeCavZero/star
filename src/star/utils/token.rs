@@ -40,7 +40,7 @@ impl Token {
             "bgtur" => Ok(Token::Instruction(Instruction::Bgtur)),
             "bltur" => Ok(Token::Instruction(Instruction::Bltur)),
             
-            "xb" => Ok(Token::Instruction(Instruction::Xb)),
+            "xlb" => Ok(Token::Instruction(Instruction::Xlb)),
             "lab" => Ok(Token::Instruction(Instruction::Lab)),
             "llb" => Ok(Token::Instruction(Instruction::Llb)),
             "sab" => Ok(Token::Instruction(Instruction::Sab)),

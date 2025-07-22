@@ -211,7 +211,7 @@ impl Parseable for Star {
                                             }
                                         */
                                         // ==== READ REG REG ====
-                                        Instruction::Xb
+                                        Instruction::Xlb
 
                                         | Instruction::Lab
                                         | Instruction::Llb
@@ -223,7 +223,7 @@ impl Parseable for Star {
                                         | Instruction::Divuhl
                                         | Instruction::Not
                                         => {
-                                            // e.g.: xb $r1, $r2
+                                            // e.g.: xlb $r1, $r2
                                             match read_r_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
                                                 Ok(sequence) => {
                                                     ast.instr_field.push(

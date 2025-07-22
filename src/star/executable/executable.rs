@@ -300,7 +300,7 @@ impl Executable for Star {
                             self.increment_program_counter();
                         }
 
-                        Instruction::Xb => {
+                        Instruction::Xlb => {
                             let reg2_v = self.registers.get(reg2);
 
                             let (low, _) = unsafe { transmute::<u16, (u8, u8)>(reg2_v) };
