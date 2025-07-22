@@ -67,7 +67,7 @@ Binary formats are the specific encoding of instructions in the **Star**. Each i
 | **sab**        | yyyy    | xxxx   | 1000  | 1111  |
 | **slb**        | yyyy    | xxxx   | 1001  | 1111  |
 | **j**          | xxxx    | 0000   | 1111  | 1111  |
-| **mcall**      | 1111    | 1111   | 1111  | 1111  |
+| **mcall**      | 0000    | 1111   | 1111  | 1111  |
 
 In this table `xxxx`, `yyyy`, and `zzzz` represent registers, while `iiii` represents immediate values. The last four bits (`0000`, `0001`, etc.) represent the specific operation code for each instruction.
 
