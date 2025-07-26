@@ -57,7 +57,7 @@ you can read the following documentation:
 - [Position Memory](/docs/position-memory.md): Learn about position memory and its importance for debugging and error reporting.
 
 ### Compilation Stages
-To learn about how the **Star** compilation process works you can read the following documentation:
+To learn about how the **Star** compilation processes you can read the following documentation:
 - [Scanner Stage](/docs/scanner-stage.md): Understand how the scanner reads source code and converts it into tokens.
 - [Parser Stage](/docs/parser-stage.md): Learn how the parser analyzes tokens and constructs an abstract syntax tree (AST).
 - [Resolver Stage](/docs/resolver-stage.md): Discover how the resolver processes the AST and resolves symbols.
