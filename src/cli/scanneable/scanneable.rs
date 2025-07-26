@@ -8,6 +8,11 @@ pub trait Scanneable {
 impl Scanneable for Cli {
     fn scan(&mut self) {
         let args = std::env::args().collect::<Vec<String>>();
+        if args.len() < 2 {
+            self.help = true;
+            return;
+        }
+        
         let mut arg_counter = 1;
         while arg_counter < args.len() {
             let arg = match args.get(arg_counter) {
