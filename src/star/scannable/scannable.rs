@@ -4,11 +4,11 @@ use crate::debugger;
 use crate::star::core::*;
 use crate::star::utils::*;
 use crate::star::debuggable::*;
-use crate::star::scanneable::positioned_tokens_vectorable::*;
+use crate::star::scannable::positioned_tokens_vectorable::*;
 
 type MacroTable = HashMap<String, (Vec<PositionedToken>, Vec<PositionedToken>)>;
 
-pub trait Scanneable {
+pub trait Scannable {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken>;
 
     fn scan_and_resolve_processors(
@@ -23,7 +23,7 @@ pub trait Scanneable {
     ) -> Vec<PositionedToken>;
 }
 
-impl Scanneable for Star {
+impl Scannable for Star {
     fn scan(&mut self, base_file_path: &String) -> Vec<PositionedToken> {
         let mut file_dependency_table: HashMap<u32, HashSet<u32>> = HashMap::new();
         let mut macro_table: MacroTable = HashMap::new();

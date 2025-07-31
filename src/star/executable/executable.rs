@@ -1,5 +1,6 @@
 use std::io;
 use std::io::Write;
+
 use std::mem::transmute;
 
 use crate::debugger;
@@ -9,6 +10,8 @@ use crate::star::math::*;
 use crate::star::utils::*;
 
 use crate::star::core::*;
+
+
 
 pub trait Executable {
     fn execute(&mut self);
@@ -41,6 +44,7 @@ pub trait Executable {
 /// - Se `aux3 == 0`, nada é armazenado.
 /// - Se `aux3 == 6` e a entrada for "Hello", armazena "Hello\0".
 /// - Se `aux3 == 3` e a entrada for "Hello World", armazena "He\0".
+
 impl Executable for Star {
     fn execute(&mut self) {
         let instruction_memory_len = match u16::try_from(self.instruction_memory.len()) {
@@ -164,14 +168,14 @@ impl Executable for Star {
                                     let condition: bool = match instruction {
                                         Instruction::Beqr => reg1_v == reg2_v,
                                         Instruction::Bneqr => reg1_v != reg2_v,
-                                        Instruction::Bgtr => unsafe {
-                                            transmute::<u16, i16>(reg1_v)
-                                                > transmute::<u16, i16>(reg2_v)
-                                        },
-                                        Instruction::Bltr => unsafe {
-                                            transmute::<u16, i16>(reg1_v)
-                                                < transmute::<u16, i16>(reg2_v)
-                                        },
+                                        Instruction::Bgtr => 
+                                            u16::cast_signed(reg1_v)
+                                                > u16::cast_signed(reg2_v)
+                                        ,
+                                        Instruction::Bltr =>
+                                            u16::cast_signed(reg1_v)
+                                                < u16::cast_signed(reg2_v)
+                                        ,
                                         Instruction::Bgtur => reg1_v > reg2_v,
                                         Instruction::Bltur => reg1_v < reg2_v,
                                         _ => unreachable!(),
@@ -262,9 +266,9 @@ impl Executable for Star {
 
                         Instruction::Divhl => {
                             let reg1_v: i16 =
-                                unsafe { transmute::<u16, i16>(self.registers.get(reg1)) };
+                                 u16::cast_signed(self.registers.get(reg1));
                             let reg2_v: i16 =
-                                unsafe { transmute::<u16, i16>(self.registers.get(reg2)) };
+                                u16::cast_signed(self.registers.get(reg2));
 
                             if reg2_v == 0 {
                                 self.registers.high = 0xFFFF;
@@ -272,8 +276,8 @@ impl Executable for Star {
                             } else {
                                 let res = reg1_v.wrapping_div(reg2_v);
                                 let rem = reg1_v.wrapping_rem(reg2_v);
-                                self.registers.high = unsafe { transmute::<i16, u16>(rem) };
-                                self.registers.low = unsafe { transmute::<i16, u16>(res) };
+                                self.registers.high = i16::cast_unsigned(rem);
+                                self.registers.low = i16::cast_unsigned(res);
                             }
                             self.increment_program_counter();
                         }
@@ -410,7 +414,7 @@ impl Executable for Star {
                                             let low: u8 = unsafe {
                                                 transmute::<u16, (u8, u8)>(self.registers.aux2).0
                                             };
-                                            let v: i8 = unsafe { transmute::<u8, i8>(low) };
+                                            let v: i8 = u8::cast_signed(low);
                                             print!("{}", v);
                                             io::stdout().flush().unwrap();
                                         }
@@ -421,9 +425,9 @@ impl Executable for Star {
                                         }
                                         4 => {
                                             // print signed word
-                                            let v: i16 = unsafe {
-                                                transmute::<u16, i16>(self.registers.aux2)
-                                            };
+                                            let v: i16 =
+                                                u16::cast_signed(self.registers.aux2)
+                                            ;
                                             print!("{}", v);
                                             io::stdout().flush().unwrap();
                                         }

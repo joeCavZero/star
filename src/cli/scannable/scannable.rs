@@ -1,11 +1,11 @@
 use crate::cli::*;
 use crate::debugger;
 
-pub trait Scanneable {
+pub trait Scannable {
     fn scan(&mut self);
 }
 
-impl Scanneable for Cli {
+impl Scannable for Cli {
     fn scan(&mut self) {
         let args = std::env::args().collect::<Vec<String>>();
         if args.len() < 2 {

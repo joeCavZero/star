@@ -7,7 +7,7 @@ pub fn u8_from_string(string: String) -> Result<u8, String> {
         Err(_) => {
             match s.parse::<i8>() {
                 Ok(value) => {
-                    unsafe { return Ok(transmute::<i8, u8>(value)) };
+                    return Ok(i8::cast_unsigned(value));
                 }
                 Err(_) => {}
             }
@@ -82,7 +82,7 @@ pub fn u16_from_string(string: String) -> Result<u16, String> {
         Err(_) => {
             match s.parse::<i16>() {
                 Ok(value) => {
-                    unsafe{ return Ok(transmute::<i16, u16>(value)); }
+                    return Ok(i16::cast_unsigned(value));
                 }
                 Err(_) => {}
             }
@@ -157,7 +157,7 @@ pub fn u32_from_string(string: String) -> Result<u32, String> {
         Err(_) => {
             match s.parse::<i32>() {
                 Ok(value) => {
-                    unsafe { return Ok(transmute::<i32, u32>(value)) };
+                    return Ok(i32::cast_unsigned(value));
                 }
                 Err(_) => {}
             }

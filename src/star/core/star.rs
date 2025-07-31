@@ -3,7 +3,7 @@ use crate::star::utils::*;
 use crate::star::core::*;
 use crate::star::generateable::*;
 use crate::star::resolveable::*;
-use crate::star::scanneable::*;
+use crate::star::scannable::*;
 use crate::star::parseable::*;
 
 pub const DATA_MEMORY_SIZE: usize = 65536;
