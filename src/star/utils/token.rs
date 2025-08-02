@@ -172,7 +172,7 @@ impl Token {
 
             // ==== STRING LITERALS ====
             _ if tkn_string.starts_with("\"") && tkn_string.ends_with("\"") => {
-                let string_literal = tkn_string.trim_matches('"').to_string();
+                let string_literal = tkn_string[1..tkn_string.len()-1].to_string();
                 Ok(Token::StringLiteral(string_literal.processed_string()))
             }
 
