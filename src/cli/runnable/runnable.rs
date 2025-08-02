@@ -140,8 +140,8 @@ fn display_registers(star: &Star) {
     debugger::message(&format!("aux2 ---------------> [0b{:016b}] [{}]", star.registers.aux2, star.registers.aux2));
     debugger::message(&format!("aux3 ---------------> [0b{:016b}] [{}]", star.registers.aux3, star.registers.aux3));
     debugger::message(&format!("carry --------------> [0b{:016b}] [{}]", star.registers.carry, star.registers.carry));
-    debugger::message(&format!("high ---------------> [0b{:016b}] [{}]", star.registers.high, star.registers.high));
     debugger::message(&format!("low ----------------> [0b{:016b}] [{}]", star.registers.low, star.registers.low));
+    debugger::message(&format!("high ---------------> [0b{:016b}] [{}]", star.registers.high, star.registers.high));
     debugger::message(&format!("return address -----> [0b{:016b}] [{}]", star.registers.return_address, star.registers.return_address));
     debugger::message(&format!("stack pointer ------> [0b{:016b}] [{}]", star.registers.stack_pointer, star.registers.stack_pointer));
     debugger::message(&format!("program counter ----> [0b{:016b}] [{}]", star.registers.program_counter, star.registers.program_counter));
