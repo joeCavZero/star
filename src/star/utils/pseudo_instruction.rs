@@ -23,8 +23,6 @@ pub enum PseudoInstruction {
     Shli, // shift left immediate
     Shri, // shift right immediate
 
-    Neg, // negate -- neg $rd
-
     Inc, // increment -- inc $r
     Dec, // decrement -- dec $r
 

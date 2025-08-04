@@ -314,13 +314,13 @@ impl Parseable for Star {
                                             label_declaration_accumulator.clear();
                                             continue;
                                         }
-                                        PseudoInstruction::Neg
-                                        | PseudoInstruction::Inc
+                                        
+                                        PseudoInstruction::Inc
                                         | PseudoInstruction::Dec
 
                                         | PseudoInstruction::Jr
                                         => {
-                                            // e.g.: neg $r
+                                            // e.g.: jr $r
                                             match read_r_sequence(&ptokens, ptk_counter + 1, ptk.position) {
                                                 Ok(sequence) => {
                                                     ast.instr_field.push(

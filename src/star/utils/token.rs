@@ -80,7 +80,6 @@ impl Token {
             "shli" => Ok(Token::PseudoInstruction(PseudoInstruction::Shli)),
             "shri" => Ok(Token::PseudoInstruction(PseudoInstruction::Shri)),
             
-            "neg" => Ok(Token::PseudoInstruction(PseudoInstruction::Neg)),
             "inc" => Ok(Token::PseudoInstruction(PseudoInstruction::Inc)),
             "dec" => Ok(Token::PseudoInstruction(PseudoInstruction::Dec)),
             

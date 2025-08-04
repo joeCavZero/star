@@ -45,6 +45,7 @@ To learn about the syntax of the **Star**
 you can read the following documentation:
 - [Instructions](/docs/instructions.md): Learn about the available instructions in the **Star**.
 - [Pseudo-Instructions](/docs/pseudo-intructions.md): Learn about pseudo-instructions and how they simplify assembly programming.
+- [Registers](/docs/registers.md): Understand the registers used in the **Star** and their purposes.
 - [Directives](/docs/directives.md): Understand the directives used in **Star**.
 - [Processors](/docs/processors.md): Explore the processors that enhance the assembly language capabilities.
 - [Machine Calls](/docs/machine-calls.md): Learn about system interaction and I/O operations.

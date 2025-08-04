@@ -56,7 +56,6 @@ impl Resolveable for Star {
                         // ==== +0 ====
                         | PseudoInstruction::Nope
                         | PseudoInstruction::Move
-                        | PseudoInstruction::Neg
                         | PseudoInstruction::Jr
                         | PseudoInstruction::Ret
                         => {}
@@ -203,20 +202,6 @@ impl Resolveable for Star {
                                 unreachable!()
                             }
                                 
-                        }
-
-                        // ==== NEGATE ====
-                        PseudoInstruction::Neg => {
-                            instr_camp.instruction.token = Token::Instruction(Instruction::Sub);
-                            if let Sequence::One(arg1) = instr_camp.sequence.clone() {
-                                instr_camp.sequence = Sequence::Three(
-                                    arg1.clone(),
-                                    zero_reg.clone(),
-                                    arg1.clone(),
-                                )
-                            } else {
-                                unreachable!()
-                            }
                         }
 
                         // ==== JUMP RELATIVE ====

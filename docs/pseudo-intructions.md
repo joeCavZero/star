@@ -42,18 +42,6 @@ add $rd, $zero, $rs
 
 ---
 
-### `neg`
-
-Negates the value in a register (two's complement).
-
-```python
-neg $rd, $rs
-```
-**Expands to:**
-```python
-sub $rd, $zero, $rs
-```
-
 ---
 
 ### `jr`
