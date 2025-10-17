@@ -26,5 +26,6 @@ Machine calls are special instructions that allow a program to interact with the
 | exit                    | 16    | ~               | ~              | Exits the program.                                                                                          |
 | print instruction       | 17    | pc              | ~              | Prints the 16-bit instruction at the given program counter (`pc`). Useful for debugging.                    |
 | sleep                   | 18    | millis          | ~              | Pauses execution for the given number of milliseconds.                                                      |
+| random                  | 19    | ~               | ~              | Generates a random number and stores it in $aux2.                                                           |
 
 > For more information about the execution of machine calls, see the [execution stage documentation](/docs/execution-stage.md).

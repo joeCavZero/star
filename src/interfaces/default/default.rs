@@ -387,6 +387,11 @@ pub fn default(star: &mut Star) -> bool {
                 millis,
             ));
         }
+        19 => {
+            // random u16 number
+            let random_value= rand::random::<u16>();
+            star.registers.aux2 = random_value;
+        }
         _ => {}
     }
     
