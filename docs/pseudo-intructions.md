@@ -260,12 +260,12 @@ add $rd, $rs, $aux1
 
 ### `subi`
 
-Subtrai um valor imediato de um registrador.
+Subtracts an immediate value from a register.
 
 ```python
 subi $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -276,12 +276,12 @@ sub $rd, $rs, $aux1
 
 ### `andi`
 
-Realiza uma operação AND bit a bit entre um registrador e um valor imediato.
+Performs a bitwise AND operation between a register and an immediate value.
 
 ```python
 andi $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -292,12 +292,12 @@ and $rd, $rs, $aux1
 
 ### `ori`
 
-Realiza uma operação OR bit a bit entre um registrador e um valor imediato.
+Performs a bitwise OR operation between a register and an immediate value.
 
 ```python
 ori $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -308,12 +308,12 @@ or $rd, $rs, $aux1
 
 ### `xori`
 
-Realiza uma operação XOR bit a bit entre um registrador e um valor imediato.
+Performs a bitwise XOR operation between a register and an immediate value.
 
 ```python
 xori $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -324,12 +324,12 @@ xor $rd, $rs, $aux1
 
 ### `shli`
 
-Desloca os bits de um registrador para a esquerda por um valor imediato.
+Shifts the bits of a register to the left by an immediate value.
 
 ```python
 shli $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
@@ -340,12 +340,12 @@ shl $rd, $rs, $aux1
 
 ### `shri`
 
-Desloca os bits de um registrador para a direita por um valor imediato.
+Shifts the bits of a register to the right by an immediate value.
 
 ```python
 shri $rd, $rs, imm
 ```
-**Expande para:**
+**Expands to:**
 ```python
 lli $aux1, imm<7...0>
 lai $aux1, imm<15...8>
