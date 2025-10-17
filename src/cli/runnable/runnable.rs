@@ -55,27 +55,12 @@ impl Runnable for Cli {
         if let Some(from_bin) = self.from_binary.clone() {
             star.process_from_binary(&from_bin);
             star.execute();
+            debugger::new_line();
             if self.registers {
                 display_registers(&star);
             }
         }
-
-        /*
-        if let Some(file) = self.file.clone() {
-            let mut star = Star::new();
-            let (symbol_table, data_section_count) = star.process(&file);
-            if let Some(binary_target_file) = self.binary_destiny.clone() {
-                debugger::info_message("Generating binary file");
-                self.generate_binary_file(binary_target_file, &star, data_section_count);
-                debugger::info_message("Binary file generated successfully");
-            } else {
-                star.execute();
-
-            }
-
-
-        }
-        */
+        
     }
 
     

@@ -74,16 +74,20 @@ fn info() -> String {
 }
 
 pub fn message(msg: &str) {
-    print!(
-        "\n{} {}",
+    println!(
+        "{} {}",
         interpreter(),
         msg,
     );
 }
 
+pub fn new_line() {
+    print!("\n");
+}
+
 pub fn info_message(inf: &str) {
-    print!(
-        "\n{} {} {}",
+    println!(
+        "{} {} {}",
         interpreter(),
         info(),
         inf,
