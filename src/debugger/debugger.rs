@@ -1,7 +1,7 @@
 use colored::Colorize;
 use supports_color::Stream;
 
-use crate::star::utils::Stringable;
+use star::prelude::*;
 
 const INTERPRETER_NAME: &str = "STAR";
 
@@ -21,7 +21,7 @@ pub fn interpreter() -> String {
     }
 }
 
-pub fn error() -> String {
+pub fn error_piece() -> String {
     let text = "[error]".to_string();
     if let Some(color_level) = supports_color::on(Stream::Stdout) {
         if color_level.has_16m || color_level.has_256 {
@@ -37,12 +37,8 @@ pub fn error() -> String {
     }
 }
 
-pub fn position(file: String, line: u32, column: Option<u32>) -> String {
-    
-    let text = match column {
-        Some(col) => format!("[file: {}, line: {}, column: {}]", file.beautiful_path(), line, col),
-        None => format!("[file: {}, line: {}]", file.beautiful_path(), line),
-    };
+pub fn format_position_piece(s: String) -> String {
+    let text = format!("[{}]", s);
     if let Some(color_level) = supports_color::on(Stream::Stdout) {
         if color_level.has_16m || color_level.has_256 {
             text
@@ -57,7 +53,7 @@ pub fn position(file: String, line: u32, column: Option<u32>) -> String {
     }
 }
 
-fn info() -> String {
+fn info_piece() -> String {
     let text = "[info]".to_string();
     if let Some(color_level) = supports_color::on(Stream::Stdout) {
         if color_level.has_16m || color_level.has_256 {
@@ -89,7 +85,7 @@ pub fn info_message(inf: &str) {
     println!(
         "{} {} {}",
         interpreter(),
-        info(),
+        info_piece(),
         inf,
     );
 }
@@ -98,8 +94,28 @@ pub fn exit_with_error(err: &str) {
     println!(
         "\n{} {} {}",
         interpreter(),
-        error(),
+        error_piece(),
         err,
     );
     std::process::exit(0);
+}
+
+
+pub fn exit_with_positional_error(star: &Star, error: &String, position: StarPosition) {
+    println!(
+        "\n{} {} {} {}",
+        interpreter(),
+        error_piece(),
+        error,
+        format_position_piece(position.get_position_path(star)),
+    );
+    std::process::exit(0);
+}
+
+pub fn exit_with_optional_positional_error(star: &Star, error: &String, position: Option<StarPosition>) {
+    if let Some(pos) = position {
+        exit_with_positional_error(star, error, pos);
+    } else {
+        exit_with_error(error);
+    }
 }

@@ -1,9 +1,14 @@
 [package]
-name = "star"
-version = "0.1.0"
+name = "star_std"
+version = "0.2.0"
 edition = "2024"
+
+[[bin]]
+name = "star"
+path = "src/main.rs"
 
 [dependencies]
 rand = "*"
 colored = "3.0.0"
 supports-color = "3.0.2"
+star = { git = "https://github.com/joeCavZero/star-lib.git", branch = "stable"}

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/assets/star-logo.png" width="300" />
+  <img src="/docs/images/star-logo.png" width="300" />
 </div>
 
 <h1 align="center">STAR VIRTUAL MACHINE</h1>
