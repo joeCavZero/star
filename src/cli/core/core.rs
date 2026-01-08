@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 
 use star::prelude::*;
-use star::resolveable::StarSymbolTable; // Star, StarPosition, etc.
+use star::resolver::StarSymbolTable;
 
 use crate::debugger;
 use crate::interface::Interface;
@@ -49,25 +49,29 @@ impl Cli {
             return;
         }
 
-        let mut star = Star::new();
-
+        // API nova: construtor padrão é `default()`
+        let mut star = Star::default();
         star.set_interface(Box::new(Interface::new()));
 
+        // =========================
+        // 1) Rodar a partir de ASM
+        // =========================
         if let Some(file) = self.file.clone() {
-            // 1) Load
-            let load_res = star.load_from_assembly_file(&file);
-
-            match load_res {
-                Ok((symbol_table, data_section_size)) => {
-                    if let Some(bin_dest) = self.binary_destiny.clone() {
-                        if let Err(err) =
-                            star.save_loaded_binary(bin_dest.as_str(), data_section_size)
-                        {
-                            debugger::exit_with_error(err.as_str());
-                        }
+            // Se o usuário pediu pra gerar binário, use o método novo direto e saia.
+            if let Some(bin_dest) = self.binary_destiny.clone() {
+                match star.save_binary_on_file_from_assembly_file(&file, &bin_dest) {
+                    Ok(_) => return,
+                    Err((err, pos)) => {
+                        debugger::exit_with_optional_positional_error(&star, &err, pos);
                         return;
                     }
+                }
+            }
 
+            // Carrega a memória a partir do arquivo .asm
+            match star.load_memory_from_assembly_file(&file) {
+                Ok((symbol_table, _custom_memories, _custom_positions)) => {
+                    // Executa
                     match star.execute() {
                         Ok(_) => {
                             println!();
@@ -94,9 +98,12 @@ impl Cli {
             }
         }
 
+        // =========================
+        // 2) Rodar a partir de BIN
+        // =========================
         if let Some(from_bin) = self.from_binary.clone() {
-            match star.load_from_binary_file(&from_bin) {
-                Ok(_) => {
+            match star.load_memory_from_binary_file(&from_bin) {
+                Ok((_custom_memories, _custom_positions)) => {
                     match star.execute() {
                         Ok(_) => {
                             debugger::new_line();
@@ -117,34 +124,86 @@ impl Cli {
             }
         }
     }
-
 }
-
-
-
-
 
 fn display_registers(star: &Star) {
     debugger::message("================== Registers ==================");
-    debugger::message(&format!("zero ----------------> [0b{:016b}] [{}]", star.registers.zero, star.registers.zero));
-    debugger::message(&format!("a -------------------> [0b{:016b}] [{}]", star.registers.a, star.registers.a));
-    debugger::message(&format!("b -------------------> [0b{:016b}] [{}]", star.registers.b, star.registers.b));
-    debugger::message(&format!("c -------------------> [0b{:016b}] [{}]", star.registers.c, star.registers.c));
-    debugger::message(&format!("d -------------------> [0b{:016b}] [{}]", star.registers.d, star.registers.d));
-    debugger::message(&format!("e -------------------> [0b{:016b}] [{}]", star.registers.e, star.registers.e));
-    debugger::message(&format!("f -------------------> [0b{:016b}] [{}]", star.registers.f, star.registers.f));
-    debugger::message(&format!("g -------------------> [0b{:016b}] [{}]", star.registers.g, star.registers.g));
-    debugger::message(&format!("aux1 ----------------> [0b{:016b}] [{}]", star.registers.aux1, star.registers.aux1));
-    debugger::message(&format!("aux2 ----------------> [0b{:016b}] [{}]", star.registers.aux2, star.registers.aux2));
-    debugger::message(&format!("aux3 ----------------> [0b{:016b}] [{}]", star.registers.aux3, star.registers.aux3));
-    debugger::message(&format!("carry ---------------> [0b{:016b}] [{}]", star.registers.carry, star.registers.carry));
-    debugger::message(&format!("low -----------------> [0b{:016b}] [{}]", star.registers.low, star.registers.low));
-    debugger::message(&format!("high ----------------> [0b{:016b}] [{}]", star.registers.high, star.registers.high));
-    debugger::message(&format!("return address ------> [0b{:016b}] [{}]", star.registers.return_address, star.registers.return_address));
-    debugger::message(&format!("stack pointer -------> [0b{:016b}] [{}]", star.registers.stack_pointer, star.registers.stack_pointer));
-    debugger::message(&format!("program counter -----> [0b{:016b}] [{}]", star.registers.program_counter, star.registers.program_counter));
-    debugger::message(&format!("instruction pointer--> [0b{:016b}] [{}]", star.registers.instruction_pointer, star.registers.instruction_pointer));
-    debugger::message(&format!("instruction register-> [0b{:016b}] [{}]", star.registers.instruction_register, star.registers.instruction_register));
+    debugger::message(&format!(
+        "zero ----------------> [0b{:016b}] [{}]",
+        star.registers.zero, star.registers.zero
+    ));
+    debugger::message(&format!(
+        "a -------------------> [0b{:016b}] [{}]",
+        star.registers.a, star.registers.a
+    ));
+    debugger::message(&format!(
+        "b -------------------> [0b{:016b}] [{}]",
+        star.registers.b, star.registers.b
+    ));
+    debugger::message(&format!(
+        "c -------------------> [0b{:016b}] [{}]",
+        star.registers.c, star.registers.c
+    ));
+    debugger::message(&format!(
+        "d -------------------> [0b{:016b}] [{}]",
+        star.registers.d, star.registers.d
+    ));
+    debugger::message(&format!(
+        "e -------------------> [0b{:016b}] [{}]",
+        star.registers.e, star.registers.e
+    ));
+    debugger::message(&format!(
+        "f -------------------> [0b{:016b}] [{}]",
+        star.registers.f, star.registers.f
+    ));
+    debugger::message(&format!(
+        "g -------------------> [0b{:016b}] [{}]",
+        star.registers.g, star.registers.g
+    ));
+    debugger::message(&format!(
+        "aux1 ----------------> [0b{:016b}] [{}]",
+        star.registers.aux1, star.registers.aux1
+    ));
+    debugger::message(&format!(
+        "aux2 ----------------> [0b{:016b}] [{}]",
+        star.registers.aux2, star.registers.aux2
+    ));
+    debugger::message(&format!(
+        "aux3 ----------------> [0b{:016b}] [{}]",
+        star.registers.aux3, star.registers.aux3
+    ));
+    debugger::message(&format!(
+        "carry ---------------> [0b{:016b}] [{}]",
+        star.registers.carry, star.registers.carry
+    ));
+    debugger::message(&format!(
+        "low -----------------> [0b{:016b}] [{}]",
+        star.registers.low, star.registers.low
+    ));
+    debugger::message(&format!(
+        "high ----------------> [0b{:016b}] [{}]",
+        star.registers.high, star.registers.high
+    ));
+    debugger::message(&format!(
+        "return address ------> [0b{:016b}] [{}]",
+        star.registers.return_address, star.registers.return_address
+    ));
+    debugger::message(&format!(
+        "stack pointer -------> [0b{:016b}] [{}]",
+        star.registers.stack_pointer, star.registers.stack_pointer
+    ));
+    debugger::message(&format!(
+        "program counter -----> [0b{:016b}] [{}]",
+        star.registers.program_counter, star.registers.program_counter
+    ));
+    debugger::message(&format!(
+        "instruction pointer--> [0b{:016b}] [{}]",
+        star.registers.instruction_pointer, star.registers.instruction_pointer
+    ));
+    debugger::message(&format!(
+        "instruction register-> [0b{:016b}] [{}]",
+        star.registers.instruction_register, star.registers.instruction_register
+    ));
     println!();
 }
 
@@ -153,11 +212,12 @@ fn display_symbol_table(symbol_table: &StarSymbolTable) {
     for (name, address) in symbol_table.iter() {
         let name_str = format!("[{}]", name);
         let address_str = format!("[0x{:04X}] [{}]", address, address);
-        
+
         let mut arrow_length: usize = 19;
         arrow_length = arrow_length.saturating_sub(name_str.len());
         let mut arrow = "-".repeat(arrow_length);
         arrow.push('>');
+
         debugger::message(&format!("{} {} {}", name_str, arrow, address_str));
     }
     println!();
