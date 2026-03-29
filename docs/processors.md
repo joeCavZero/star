@@ -2,10 +2,6 @@
 
 Processors are special directives that allow the assembler to perform advanced behaviors, such as including files and defining macros.
 
-In the **Star Virtual Machine** there are two main types of processors:
-- **Include**: Allows the inclusion of external files into the source code.
-- **Define**: Allows the definition of macros that can be used throughout the code.
-
 You can read more about how processors are handled in the [scanner stage documentation](/docs/scanner-stage.md).
 
 ## Include Processor
